@@ -1,0 +1,724 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>컴네 7주차 - ARP 공부 자료</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-interactiveBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="b0d72220-c092-41a4-8e9a-e4d41f3e222f" class="page sans"><header><h1 class="page-title">컴네 7주차 - ARP 공부 자료</h1><p class="page-description"></p></header><div class="page-body"><ul id="740b58e4-f27d-410b-b1e9-adfb3854d242" class="block-color-blue_background toggle"><li><details open=""><summary><strong>Table of contents</strong></summary><nav id="95588286-6d8e-4b2c-a5fe-ca375eda20e5" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c2b97ad8-45ab-4083-8ac2-2981926f6f2c">ARP Protocol이란?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#688d3b32-b837-469a-bbbd-0c11d22f5fce">ARP 패킷 구조</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#535fbc16-b6ec-4b9c-a3e3-0507630caea3">Ethernet Frame</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#35b40cec-9b09-4603-9b47-8b7b53ed490e">ARP Frame</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#fcdb0a8b-0877-473b-aa9e-138149a8f1a7">ARP 데이터 flow</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#2fe14916-2863-43b5-a8e6-52bfe4cabf05">ARP cache table이란?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#d03ecacc-e640-41f1-8607-8e0c1992e059">ARP 레이어 분석</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#cd1a4e44-99d5-4d4d-a855-53143144370d">출발지 (ARP - request)</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#f99f1461-dc02-4d76-ae1b-90eadad178a4">Application Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bd36a6e2-a0f1-4290-90fa-4220022c3bd7">IP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#0cd62fc2-a602-4fc2-ae5b-49865d29a9d6">ARP Layer </a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#78b8a7b3-19c9-4cc8-bec7-d01b2a0edd48">Ethernet Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#d47bd5ec-94a3-4dff-a4d9-bab30e9620da">NI Layer </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d96bee1e-f4aa-4562-a5eb-71af6c047b2f">목적지</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#19b19fb9-9a53-4c1a-93fc-b3e63e4860b9">NI Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#46c292ea-56fd-45bb-88bb-f8cd077a80a6">Etherent Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#ce10ed49-2e7a-4801-b76c-31b8232d4511">ARP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3a579c0e-66be-4506-8078-cfcbaa22c0cd">IP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#b29bb23c-e961-4fdd-9646-c3c499a1fa4d">Application Layer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#eff3067c-c527-42fb-b6f9-2514734f2e87">출발지 (ARP - reply)</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#67ddbe9f-a197-40e1-b0d3-6452cb032235">NI Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#af1dcfb1-9917-4187-8f89-c7a385835ece">Etherent Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c2d74c40-70b6-49d2-b8cd-18b9d34670d7">ARP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#6f74a1ba-9d3d-4992-add8-6b0560e678fd">IP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#4da9c3fb-b40c-427d-9cdd-714a92b7a95a">Application Layer</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#6a6c5558-0292-4c11-8c0e-bdde728a43c4">ARP 레이어별 구현 목록</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#dd48458a-47e4-47f0-8840-97d25337487e">Application Layer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2457b853-3aeb-4d19-b82d-50052462177c">IP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0c814ff0-725e-46f2-a1f2-6bb6bfaeed42">ARP Layer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b43105de-cdca-462c-a023-087dcf4ac311">Ethernet Layer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1d16ba45-670c-4ff2-81b5-0a65ce6967f1">NI Layer</a></div></nav></details></li></ul><p id="405fdef9-22e7-4339-a247-7d7e9aed09a1" class="">
+</p><p id="8588f42a-143b-4af1-88e4-7664f10e7395" class="">
+</p><h1 id="c2b97ad8-45ab-4083-8ac2-2981926f6f2c" class="">ARP Protocol이란?</h1><hr id="7062bb68-cd92-4dd2-88b4-99ecdd01a336"/><p id="19aa356a-90fc-4a54-ab43-ab9c59cdbec1" class="">ARP 프로토콜은 같은 네트워크 대역에서 통신을 하기 위해 필요한 MAC 주소를 IP 주소를 이용해서 알아오는 프로토콜이다.</p><p id="530bfc46-724b-4343-bb96-0f80f72a5ec9" class="">같은 네트워크 대역에서 통신을 한다고 하더라도 데이터를 보내기 위해서는 7계층부터 캡슐화를 통해 데이터를 보내기 때문에 IP주소와 MAC주소가 모두 필요하다. 이때, IP 주소는 알고 MAC 주소는 모르더라도 ARP를 통해 통신이 가능하다.</p><p id="3c57c6c4-bba0-4a6b-838f-66ed4afa678e" class="">(평상 시에는 컴퓨터가 자동으로 ARP를 해주기 때문에 IP주소만 알아도 통신할 수 있다.)</p><p id="9d6aa76f-6679-496c-9afa-85de8331ba76" class="">
+</p><h1 id="688d3b32-b837-469a-bbbd-0c11d22f5fce" class="">ARP 패킷 구조</h1><hr id="15a72ef0-9160-4cfb-bfec-00842631ac59"/><figure id="cc178787-c7f3-4d88-ac0b-43bfcad98d92" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled.png"><img style="width:2556px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled.png"/></a></figure><h2 id="535fbc16-b6ec-4b9c-a3e3-0507630caea3" class="">Ethernet Frame</h2><p id="ef7eef35-75cb-4747-95c5-205405488af4" class=""><strong>[Ethernet destination address Field]</strong></p><p id="00662e9d-92be-42ad-996a-4cc5286d3ba5" class="">Broadcast 주소</p><p id="1eb9dc20-ba89-430c-884b-336f2367c232" class="">
+</p><p id="8e0770c9-d80f-4e1c-8494-e2d5a4efa79a" class=""><strong>[Ethernet source address Field]</strong></p><p id="c9cf2407-48ae-4031-867a-6562fe26f4fa" class="">출발지의 MAC 주소</p><p id="fa4e659e-5d87-444e-ac70-141f1d53beff" class="">
+</p><p id="b93a782e-a83a-4cbd-80da-ced37255a2ef" class=""><strong>[frame type Field]</strong></p><p id="27830577-1a9c-4a21-b417-384111b5c32e" class="">ARP 요청과 반환 시, 이 값은 0x0806으로 고정</p><p id="6e06c0f2-44c4-4959-9337-66519ffff928" class="">
+</p><h2 id="35b40cec-9b09-4603-9b47-8b7b53ed490e" class="">ARP Frame</h2><p id="1cff51f5-20b9-4afa-b526-66564186da87" class=""><strong>[hard type Field]</strong></p><p id="91d6f4e3-9d3b-4451-b4e9-e1e69e27084a" class="">2계층에서 사용하는 프로토콜</p><p id="bbe2d819-47f1-492f-8bb6-ccc0588383da" class="">이더넷 프로토콜만 있는 건 아니지만 이더넷 프로토콜이라고 생각하면 됨</p><p id="bf4e2a9c-2bdf-4018-8f33-b8dbf495164f" class="">0001 또는 1로 표기(이더넷 프로토콜일 경우)</p><p id="86c9d382-4de6-4a21-9163-428f4f57e44f" class="">
+</p><p id="bd25436a-3965-4092-bfab-be8ad487f0f5" class=""><strong>[prot type Field]</strong></p><p id="2f9c6516-5f51-416c-b1cb-a8659ac2f7cf" class="">목적지에서 사용하는 IP 프로토콜 (IPv4로 생각)</p><p id="aa90ec47-768b-4fa3-a625-eaf0869d014f" class="">0800으로 표기</p><p id="112fca21-2cf6-4b25-afc1-8707112c5a6e" class="">
+</p><p id="1376b0c6-c0b4-4df5-8516-b6c472367e51" class=""><strong>[hard size Field]</strong></p><p id="b48e61cb-b36a-4951-a1e2-8771a9a307de" class="">MAC 주소 크기</p><p id="cc1d0b8f-e245-4b39-9cfd-aa108af01d30" class="">06 또는 6으로 표기</p><p id="0f5e9ac7-da37-4572-bd1c-cf8f78425051" class="">
+</p><p id="d1cf6937-a3db-4a6a-ba4f-ef80bf4e8672" class=""><strong>[prot size Field]</strong></p><p id="705aea7c-9fcf-419c-82ba-cc4caf66952c" class="">IPv4 크기</p><p id="695a2539-7270-4b80-aad9-c88f8c6f33d1" class="">04 또는 4로 표기</p><p id="69c61853-7150-4104-a5a5-c4b8cbc0a114" class="">
+</p><p id="5f9f70fe-fe50-4c2d-82de-63b157c278a2" class=""><strong>[op(opertion) Field]</strong></p><p id="70056d6f-b6a3-439a-933b-cec359a4ef22" class="">MAC 주소 요청 중 == ARP request(1로 표기)</p><p id="8f70cfab-e22e-464b-92e8-2e003b0f8508" class="">MAC 주소 반환 중 == ARP reply(2로 표기)</p><p id="53c6476a-5705-4445-b7ce-b71c9eb8c58d" class="">IP 주소 요청 중 == RARP request(3으로 표기)</p><p id="fb630e0e-3f13-4e82-b82b-0b696104276f" class="">IP 주소 반환 중 == RARP reply(4로 표기)</p><p id="e36788c7-d011-4b60-b9e6-a271f5245124" class="">
+</p><p id="a9ffb5a4-f7eb-40e7-b06a-a6005b673f09" class=""><strong>[sender Ethernet address Field]</strong></p><p id="ee6636a6-ae0b-4b17-b3f4-eb18743ae2e3" class="">출발지 MAC 주소 (6byte)</p><p id="632004f7-1cb1-4696-9871-56eadda2bf08" class="">
+</p><p id="437a9a9a-4e72-45b0-829f-5842a9dd550b" class=""><strong>[sender IP address Field]</strong></p><p id="1c67de32-c812-4f7e-a9f2-70e6695ba091" class="">출발지 IP 주소 (4btye)</p><p id="e0d8abaa-f15c-4073-a253-2ed0917b7f02" class="">
+</p><p id="94e0ecb6-9d19-4aa6-a163-2fb2cec1659f" class=""><strong>[target Ethernet address Field]</strong></p><p id="f7aadd9a-cf62-4138-803b-178738c971e8" class="">목적지 MAC 주소 (6byte)</p><p id="68f1057c-3ad2-4413-b4fe-63bf52fd9b23" class="">
+</p><p id="9dfefb38-857c-467c-9987-36a04ffce7af" class=""><strong>[target IP address Field]</strong></p><p id="72605b64-3691-4495-8aec-891ee9249b0a" class="">목적지 IP 주소 (4byte)</p><p id="4ac6309b-91a0-4c62-a970-e5f0767471a0" class="">
+</p><h1 id="fcdb0a8b-0877-473b-aa9e-138149a8f1a7" class="">ARP 데이터 flow</h1><hr id="874ff214-bd1b-4183-8ebe-5a987a03026b"/><figure id="f31839f0-d001-4d79-b862-6025bbadda4a" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%201.png"><img style="width:2020px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%201.png"/></a></figure><p id="132e8607-3fe8-45b1-b9db-2bcc9ea4e522" class="">같은 LAN 대역(같은 네트워크 대역)에 있는 컴퓨터 A가 컴퓨터 C와 통신하고싶지만 IP주소만 알고있는 상황이라고 가정 </p><p id="572ec03c-6893-4faa-98ef-0fd81573fcfb" class="">
+</p><ol type="1" id="cfc6f2ef-191e-4349-b1a1-1493a760e626" class="numbered-list" start="1"><li>컴퓨터 A가 ARP요청 프로토콜을 작성</li></ol><p id="6fcb0558-ab1b-459d-a32c-4ecbb70a3a44" class="">ARP 요청 패킷에 이더넷 헤더를 붙여서 작성한다.</p><p id="546c97f5-9770-4846-b6bc-8f3a1509a6a3" class="">근데, ARP 패킷에도 목적지 MAC 주소를 써야하고 이더넷 헤더에도 목적지 MAC 주소를 써야하는데 모르지 않나? </p><p id="40e09e03-f6af-4d09-a414-3f3538c027c7" class="">먼저 ARP Frame을 살펴보자</p><p id="aa18b8b8-f32d-4b95-aab9-b54e6c29e779" class="">[request - ARP Frame]</p><p id="365690b8-4928-48a1-93c6-463701633a4f" class="">  </p><figure id="86991afe-9c46-43c8-9e2c-a30649008b04" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%202.png"><img style="width:240px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%202.png"/></a></figure><p id="29a6f072-6489-4355-9e38-eb95cf6b2661" class="">출발지 IP 주소는 16진수로 변환한 것이다.</p><p id="3486661d-3115-4ee3-ba22-ff41040ae857" class="">목적지 MAC 주소는 모르니까 00 00 00 00 00 00 으로 비워둔다.</p><p id="21cff0bc-37b5-4332-a307-e44398f205e5" class="">목적지 IP 주소도 16진수로 변환하여 적는다.</p><p id="7f9bdbe6-da30-4de9-8300-643befece63d" class="">
+</p><p id="bcfcc073-2e77-4830-b373-ff2497b97e27" class="">그렇다면 이더넷 헤더는 어떨까?</p><p id="338b25db-3130-47fd-8294-7716c409d514" class="">[request - Ethernet Frame]</p><figure id="15cc6bc2-a25e-4fbd-8f1b-10d33e21bd63" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%203.png"><img style="width:288px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%203.png"/></a></figure><p id="79eb1f90-9641-44c3-affb-859c7a7b74b6" class="">목적지의 MAC 주소를 모르기때문에 FF FF FF FF FF FF로 작성한다. 이진수로 생각하면 1로 꽉채운 것이다.</p><p id="c20dc4d7-0134-4805-bfd4-2ae3ff5ae7ef" class="">== broadcast라는 뜻</p><p id="b282ca45-d43b-48e5-bb1a-e0edfe8bdfd7" class="">이렇게 이더넷 헤더를 broadcast로 지정하면 스위치로 연결된(== 같은 네트워크 대역) 모든 장비에게 프레임 전송</p><p id="1a5df994-8c47-4d52-a98b-9fe5b756442b" class="">
+</p><ol type="1" id="36fabe4c-d915-4232-bb78-e7a52420e231" class="numbered-list" start="2"><li>컴퓨터 A가 스위치(L2 장비)한테 프레임 전송</li></ol><ol type="1" id="85da1b05-d384-4c74-b9ba-db70aa6c296e" class="numbered-list" start="3"><li>스위치는 L2장비니까 이더넷 헤더만 까서 확인</li></ol><ol type="1" id="4e4fcda4-05f1-4c29-9ae9-bb96b5efdb7c" class="numbered-list" start="4"><li>broadcast니까 스위치에 연결된 모든 장비에 프레임 재전송</li></ol><ol type="1" id="31ecac57-7b5d-4890-a98e-5e3cb3c6bc4b" class="numbered-list" start="5"><li>프레임을 받은 장비들(컴퓨터 C 포함)은 이더넷 헤더를 까고 이더넷 헤더에 적힌 MAC주소를 확인, broadcast임을 확인하고 ARP 프레임을 까봄(L3 장비니까)</li></ol><ol type="1" id="5998a2cc-db67-4b41-a8c9-69d0ada76cd7" class="numbered-list" start="6"><li>각 컴퓨터는 목적지 IP주소를 확인하고 자신의 IP 주소와 다르면 discard, 같으면 출발지 MAC 주소에 자신의 MAC 주소(컴퓨터 C의 MAC 주소)를 넣어서 ARP reply 패킷의 ARP Frame 작성</li></ol><figure id="ab7aa025-f4d9-428c-bce6-a284796be44d" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%204.png"><img style="width:240px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%204.png"/></a></figure><ol type="1" id="21283541-73f0-4e51-bb65-8c565629b0ea" class="numbered-list" start="7"><li>ARP reply 패킷의 Ethernet Frame에서도 어디서 온 프레임인지 알기 때문에 도착지 MAC 주소(컴퓨터 A의 MAC 주소)를 잘 쓸 수 있음
+</li></ol><figure id="00f5dad5-45b4-4e2a-8edb-d22ab4e52228" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%205.png"><img style="width:288px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%205.png"/></a></figure><ol type="1" id="956f9738-767d-4113-a8ad-ac6dce343bdb" class="numbered-list" start="8"><li>ARP - reply 패킷을 받은 컴퓨터 A는 다 까서 컴퓨터 C의 MAC 주소를 확인하고 자신의 ARP cache table을 갱신</li></ol><p id="74007ff5-3671-450b-9300-33ada12bff14" class="">
+</p><h1 id="2fe14916-2863-43b5-a8e6-52bfe4cabf05" class="">ARP cache table이란?</h1><hr id="0f9b7dc7-50d2-4921-a2d5-a2c7c709f6af"/><p id="477fb42d-4afc-49fb-8145-9bd496c517fb" class="">나(내 컴퓨터)와 통신했던 컴퓨터들의 MAC 주소와 IP 주소들을 하나씩 맵핑 시켜놓은 것</p><p id="3a5c8b86-76ed-427e-9288-1877efe79ed5" class="">하지만, cache table이기에 일정 시간이 지나면 사라진다. 사라지고 나서 다시 그 컴퓨터와 통신하려면 ARP를 통해 cache table을 채워넣고 통신한다. (수동으로 등록해서 영구적으로 사용하는 방법도 있음)</p><p id="8f6cdef6-e47d-42ff-91db-ea038842e2fd" class="">
+</p><p id="062ae33d-4055-4322-9838-a1f872e6ab6d" class="">20분마다 없앤다..?</p><p id="f3e0b452-f7e5-4c32-925a-1161a9dcf028" class="">
+</p><h1 id="d03ecacc-e640-41f1-8607-8e0c1992e059" class="">ARP 레이어 분석</h1><hr id="5511d7b1-2a56-4f7a-bb7e-90c399699189"/><figure id="67b6de8a-d0de-4f81-b5d8-cc659069dd2b" class="image"><a href="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%206.png"><img style="width:1444px" src="%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%82%E1%85%A6%207%E1%84%8C%E1%85%AE%E1%84%8E%E1%85%A1%20-%20ARP%20%E1%84%80%E1%85%A9%E1%86%BC%E1%84%87%E1%85%AE%20%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20b0d72220c09241a48e9ae4d41f3e222f/Untitled%206.png"/></a></figure><p id="fda46833-0944-4eef-9fe1-21b2132e82db" class="">
+</p><p id="e97cfe93-3299-4750-a483-8e204f5ecda2" class="">
+</p><h2 id="cd1a4e44-99d5-4d4d-a855-53143144370d" class="">출발지 (ARP - request)</h2><h3 id="f99f1461-dc02-4d76-ae1b-90eadad178a4" class="">Application Layer</h3><p id="fd69702f-7eb9-4604-bcdd-700d6a5efab0" class="">GUI</p><p id="36c501e0-7102-4cf0-b25e-17ed7cbc0ab0" class="">
+</p><h3 id="bd36a6e2-a0f1-4290-90fa-4220022c3bd7" class="">IP Layer</h3><p id="18f4c3dc-2f74-46d4-a6eb-f0d630b23832" class="">
+</p><p id="94523d7d-215e-4ae1-842b-d89c2248536c" class="">
+</p><h3 id="0cd62fc2-a602-4fc2-ae5b-49865d29a9d6" class="">ARP Layer </h3><p id="cbfd07ea-3b0b-45fc-838f-ca4460a8688b" class="">Ethernet 프레임, ARP 프레임 까보는 곳?</p><p id="31038384-cbc6-4d10-b412-0f2fba7201a1" class="">
+</p><p id="6e865827-9a4e-465e-9715-ad9305e29abe" class="">ARP - request 패킷 작성</p><ul id="aae9e5d1-2687-4700-b72e-aa70aa4de801" class="bulleted-list"><li style="list-style-type:disc">이더넷 프레임</li></ul><ul id="d5de2020-a665-41c9-8c0d-8e0b9e4ffdb6" class="bulleted-list"><li style="list-style-type:disc">ARP 프레임</li></ul><p id="9c792e86-66e8-4de0-84b5-1b8975426a69" class="">
+</p><h3 id="78b8a7b3-19c9-4cc8-bec7-d01b2a0edd48" class="">Ethernet Layer</h3><p id="77ea4611-1ce1-4f90-86f0-a015634598af" class="">Ethernet 프레임만 까보는 곳?</p><p id="74530866-cb4d-4a3c-ad9f-512d40a79c09" class="">
+</p><p id="42b2b1c4-f011-412f-95d9-b43f529b887f" class="">이더넷 프레임을 까보고 브로드캐스트임을 확인</p><p id="232a61a5-9f69-49d7-9434-4058d3dc32bd" class="">NI Layer로 다시 패킷으로 만들어서 전송</p><p id="7c6d5b3b-938b-4e01-bb0d-8c15ebce9e94" class="">
+</p><h3 id="d47bd5ec-94a3-4dff-a4d9-bab30e9620da" class="">NI Layer </h3><p id="10edf7dd-bb61-44de-a0b2-7e6b7a28ceba" class="">패킷 전송, 수신만 하는 곳?</p><p id="46bd860b-b542-466b-b0b2-c4d35535aafb" class="">
+</p><p id="be8d7a71-0fa8-4817-aa82-f3d166ed4208" class="">브로드캐스트로 전송</p><p id="6fbecef4-df76-44b6-83b8-9ea658d6e166" class="">
+</p><h2 id="d96bee1e-f4aa-4562-a5eb-71af6c047b2f" class="">목적지</h2><h3 id="19b19fb9-9a53-4c1a-93fc-b3e63e4860b9" class="">NI Layer</h3><p id="addf718f-dc35-4c26-afc4-0a50d8a8f55e" class="">패킷 수신</p><p id="467a9616-4923-4258-aae1-bf5c751393e1" class="">
+</p><h3 id="46c292ea-56fd-45bb-88bb-f8cd077a80a6" class="">Etherent Layer</h3><p id="5ed2b61d-b8d3-4754-9145-73282e88e38f" class="">패킷에서 이더넷 프레임만 까보고 브로드캐스트임을 확인</p><p id="a3c2e083-5497-4a3a-a171-8aa73d54bf4b" class="">
+</p><h3 id="ce10ed49-2e7a-4801-b76c-31b8232d4511" class="">ARP Layer</h3><p id="26cf9595-8dd6-4ee0-af43-b757e8b2c725" class="">패킷에서 ARP 프레임 까보고 자신의 IP 주소가 맞는 지 확인</p><p id="e251eca0-62c2-4751-96b3-66bc67caf6fd" class="">다르면 discard</p><p id="547973e3-e6dc-4e16-9500-e9d47fe763f8" class="">같으면 자신의 MAC 주소를 채워 넣어서 ARP - reply 패킷 작성</p><p id="f8d3dd11-d057-49dc-972e-aa6f36371760" class="">이때 reply 패킷의 이더넷 프레임에는 출발지의 MAC 주소를 넣어줘야 함</p><p id="8a6ab188-d501-4385-930a-a81731d7d466" class="">
+</p><h3 id="3a579c0e-66be-4506-8078-cfcbaa22c0cd" class="">IP Layer</h3><p id="ed470c88-60d5-4be7-997c-087c2f113a44" class="">필요 없음?</p><p id="c2212cb0-6c63-4013-83bc-61ffdea3b2c9" class="">
+</p><h3 id="b29bb23c-e961-4fdd-9646-c3c499a1fa4d" class="">Application Layer</h3><p id="1b212c1d-9bcd-4342-ae1f-2a3c996ddbdf" class="">필요 없음?</p><p id="18d19e41-a9c4-46a3-a4e4-99d3f4d286ea" class="">
+</p><h2 id="eff3067c-c527-42fb-b6f9-2514734f2e87" class="">출발지 (ARP - reply)</h2><h3 id="67ddbe9f-a197-40e1-b0d3-6452cb032235" class="">NI Layer</h3><p id="d32357ae-08ec-4578-8de1-fd9b0d06844a" class="">패킷 수신</p><p id="3b2d070e-7f87-49fc-9468-755c8daaa223" class="">
+</p><h3 id="af1dcfb1-9917-4187-8f89-c7a385835ece" class="">Etherent Layer</h3><p id="814ca3bb-cc32-4207-be7a-d4c1f2b255b8" class="">패킷에서 이더넷 프레임만 까보고 자신의 MAC 주소임을 확인</p><p id="0fc8e33a-54f7-4b11-b04c-392e7ec776eb" class="">
+</p><h3 id="c2d74c40-70b6-49d2-b8cd-18b9d34670d7" class="">ARP Layer</h3><p id="cafa320c-0d15-4619-b223-2d38db74cccf" class="">패킷에서 ARP 프레임 까보고 필요한 MAC 주소를 받아서 ARP cache table 업데이트</p><p id="1d24bcd5-0621-4ae3-bbbf-f8c4cf3bc176" class="">
+</p><h3 id="6f74a1ba-9d3d-4992-add8-6b0560e678fd" class="">IP Layer</h3><p id="28cc0665-b5a3-494a-9c44-17f3f1022570" class="">
+</p><p id="291d2d01-2a59-42d1-8ea5-12c5e398aa96" class="">
+</p><h3 id="4da9c3fb-b40c-427d-9cdd-714a92b7a95a" class="">Application Layer</h3><p id="2efde053-41ef-4895-8ed8-6f9601e737a5" class="">GUI에 업데이트</p><p id="ed8c48cd-0341-4833-bddb-719a4bc6f60c" class="">
+</p><h1 id="6a6c5558-0292-4c11-8c0e-bdde728a43c4" class="">ARP 레이어별 구현 목록</h1><h2 id="dd48458a-47e4-47f0-8840-97d25337487e" class="">Application Layer</h2><p id="b2d18b44-3ea3-44e9-b861-327ee2199d84" class="">MFC 코드</p><h2 id="2457b853-3aeb-4d19-b82d-50052462177c" class="">IP Layer</h2><p id="6eca844c-d57b-4238-9914-e6eabbf12ef2" class="">??</p><h2 id="0c814ff0-725e-46f2-a1f2-6bb6bfaeed42" class="">ARP Layer</h2><p id="ca93eba9-05eb-4eb7-8edd-d25578d7b21d" class="">ARP - request 패킷 작성하는 함수</p><p id="8fba9804-442e-4e4b-8533-86e1e554bfa6" class="">ARP 프레임 까서 자신의 IP 주소와 맞는 지 확인하는 함수</p><p id="6daff2d0-42cb-4a4f-aac1-d7ea0d0a0e17" class="">ARP - reply 패킷(이더넷 프레임, ARP 프레임 모두) 작성하는 함수</p><p id="05ada47f-43c3-4b5d-9391-320a0c146133" class="">
+</p><h2 id="b43105de-cdca-462c-a023-087dcf4ac311" class="">Ethernet Layer</h2><p id="64d9ecb3-d8cc-4074-bc5a-a3bc55123285" class="">ARP 패킷에서 이더넷 프레임을 깐 뒤, 자신의 MAC 주소인지, broadcast인지 확인하는 함수 (broadcast도 아니고 자신의 MAC 주소도 아닐 경우에만 discard)</p><p id="8b70d3b0-cfda-4381-a5df-a4e4b3c9fbd4" class="">NI로 패킷 전송 함수</p><p id="313af50f-7fca-40d8-a25b-154d31eb3b8c" class="">NI에서 패킷 받아오는 함수</p><p id="265a779c-1e7e-43d9-9420-f4aac9407f7e" class="">
+</p><h2 id="1d16ba45-670c-4ff2-81b5-0a65ce6967f1" class="">NI Layer</h2><p id="38d60a55-5697-45da-825d-1471c04b280d" class="">패킷 전송 함수</p><p id="d5a162eb-54ff-4c3f-b0cb-69229f520022" class="">패킷 받아오는 함수</p><p id="88006c47-ce04-4262-8fa3-b6d4dd3f41c4" class="">
+</p><p id="131f420c-6aab-46f6-9498-5a74df3774b5" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
