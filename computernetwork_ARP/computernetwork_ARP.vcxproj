@@ -76,8 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\cn23\week7\computernetwork_ARP\computernetwork_ARP\WpdPack\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\cn23\week7\computernetwork_ARP\computernetwork_ARP\WpdPack\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\ham\Downloads\computernetwork_ARP\computernetwork_ARP\computernetwork_ARP\WpdPack\Include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared</IncludePath>
+    <LibraryPath>C:\Users\ham\Downloads\computernetwork_ARP\computernetwork_ARP\computernetwork_ARP\WpdPack\Lib;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\atlmfc\lib\x86;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\uwp;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\ucrt\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -99,6 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>wpcap.lib;packet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>comsuppwd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

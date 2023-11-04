@@ -45,4 +45,10 @@ public:
 	afx_msg void OnLbnSelchangeList8();
 	afx_msg void OnBnClickedBntArpAdd();
 	afx_msg void OnLbnSelchangeList();
+	afx_msg void OnLbnSelchangeListArp();
+	CListCtrl m_list_arp_cache;
+	afx_msg void OnBnClickedBntListItemDel();
+	CIPAddressCtrl m_ip_address;
+	afx_msg void OnBnClickedBntSend();
+	afx_msg void OnLvnItemchangedList1(NMHDR* pNMHDR, LRESULT* pResult);
 };
