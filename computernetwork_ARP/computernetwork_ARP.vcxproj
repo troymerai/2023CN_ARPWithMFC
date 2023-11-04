@@ -76,6 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\cn23\week7\computernetwork_ARP\computernetwork_ARP\WpdPack\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\cn23\week7\computernetwork_ARP\computernetwork_ARP\WpdPack\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -91,11 +93,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CONSOLE;HAVE_REMOTE;WPCAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>wpcap.lib;packet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -183,16 +186,29 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ARPLayer.h" />
+    <ClInclude Include="BaseLayer.h" />
     <ClInclude Include="computernetwork_ARP.h" />
     <ClInclude Include="computernetwork_ARPDlg.h" />
+    <ClInclude Include="EthernetLayer.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IPLayer.h" />
+    <ClInclude Include="LayerManager.h" />
+    <ClInclude Include="NILayer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ARPLayer.cpp" />
+    <ClCompile Include="BaseLayer.cpp" />
     <ClCompile Include="computernetwork_ARP.cpp" />
     <ClCompile Include="computernetwork_ARPDlg.cpp" />
+    <ClCompile Include="EthernetLayer.cpp" />
+    <ClCompile Include="IPLayer.cpp" />
+    <ClCompile Include="LayerManager.cpp" />
+    <ClCompile Include="NILayer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
