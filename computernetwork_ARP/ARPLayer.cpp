@@ -58,12 +58,13 @@ unsigned char* CARPLayer::make_request() {
 	// 패킷 내용 초기화
 	memset(pPacket, 0, packetSize);
 
+	// 주소 넣어주는 거 ARP table 조회쪽으로 추상화할 수 있을 것 같은데 일단 냅두기..
 
 	// 이더넷 헤더 작성 함수
 	//
 	// TODO
 	//
-	// source MAC 주소 있는 지 확인하고 없으면 이더넷 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
+	// source MAC 주소 있는 지 확인하고 없으면 이더넷 레이어에 요청해서 멤버 변수에 받아와서 저장하고 넣어주기
 	// 나머지는 고정값 넣어주기
 	//
 
@@ -72,8 +73,8 @@ unsigned char* CARPLayer::make_request() {
 	// TODO
 	// 
 	// source MAC는 위에서 저장한 변수에서 받아와서 넣어주고
-	// source IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
-	// destination IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
+	// source IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 멤버 변수에 받아와서 저장하고 넣어주기
+	// destination IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 멤버 변수에 받아와서 저장하고 넣어주기
 	// 나머지는 고정값 넣어주기
 	//
 
@@ -84,13 +85,41 @@ unsigned char* CARPLayer::make_request() {
 
 //
 // ARP reply 패킷 작성 함수
-unsigned char* CARPLayer::make_reply(unsigned char* pPacket) {
+unsigned char* CARPLayer::make_reply(unsigned char* ppayload, unsigned char* MAC_target) {
 
-	// 이더넷 레이어에서 올라온 패킷에서 이더넷 헤더를 까고 
+	unsigned char* pPacket = nullptr;
 
-	// 이더넷 헤더에 자기 MAC 넣는 함수
+	// 패킷의 크기에 맞게 메모리 할당
+	unsigned int packetSize = 42;
+	pPacket = new unsigned char[packetSize];
 
-	//  ARP 헤더에 자기 MAC 넣는 함수
+	// 패킷 내용 초기화
+	memset(pPacket, 0, packetSize);
+
+	// 
+	// 매개변수로 받은 ppayload를 ARP 헤더 구조체로 캐스팅하기
+	// 
+	// 
+	// 이더넷 헤더 작성
+	//
+	// TODO
+	// 
+	// Source MAC에 매개변수로 받은 MAC_target값 넣어주기
+	// destination MAC으로 캐스팅한 값 중에 source MAC 넣어주기
+	// 나머지는 고정값
+	// 
+	// 
+	// ARP 헤더 작성
+	// 
+	// TODO
+	// 
+	// SOURCE MAC에 매개변수로 받은 MAC_target값 넣어주기
+	// destination MAC으로 캐스팅한 값 중에 source MAC 넣어주기
+	// source IP에 캐스팅한 값 중에 destination IP 넣어주기
+	// destination IP에 캐스팅한 값 중에 source IP 넣어주기
+	//
+
+	// 다 합쳐서 pPacket 완성
 
 	return pPacket;
 }
@@ -99,10 +128,17 @@ unsigned char* CARPLayer::make_reply(unsigned char* pPacket) {
 
 //
 // 하위 레이어(Ethernet Layer)로 ARP 패킷 (request, reply 둘 다) 전송 함수
-BOOL CARPLayer::Send() {
+BOOL CARPLayer::Send(unsigned char* pPacket) {
 
 
 	BOOL bSuccess = FALSE;
+
+	//
+	// TODO
+	// 
+	// 하위 레이어(ethernet layer)로 매개변수로 받은 패킷 전송
+	//
+	//
 
 	return bSuccess;
 }
@@ -119,8 +155,8 @@ BOOL CARPLayer::Send() {
 //
 
 
-// 하위 레이어(Ethernet Layer)에서 payload 받는 함수
-BOOL CARPLayer::Receive(unsigned char* ppayload) {
+// 하위 레이어(Ethernet Layer)에서 payload 받는 함수 (목적지에서 사용하는 것)
+BOOL CARPLayer::Receive_Request(unsigned char* ppayload) {
 
 	// 받은 데이터를 ARP header 구조체로 캐스팅
 	PARP_HEADER pFrame = (PARP_HEADER)ppayload;
@@ -137,12 +173,32 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 		
 		// TODO
 		// 
-		// ARP cache table에 Destination MAC 주소 업데이트
-		// Dlg에 업데이트하는 함수
+		// 이더넷 레이어에 source MAC 달라고 요청 보내서 멤버 변수에 저장
+		// ARP cache table에 저장된 멤버 변수를 매개변수로 넣기 
+		// ARP reply 패킷 작성 요청 
 		
 		
 		
 	}
+
+
+	return bSuccess;
+}
+
+// 하위 레이어(Ethernet Layer)에서 payload 받는 함수 (출발지에서 사용하는 것)
+BOOL CARPLayer::Receive_Reply(unsigned char* ppayload) {
+
+	// 받은 데이터를 ARP header 구조체로 캐스팅
+	PARP_HEADER pFrame = (PARP_HEADER)ppayload;
+
+	BOOL bSuccess = FALSE;
+	
+	// TODO
+	//
+	// 캐스팅한 값 중에 source MAC을 멤버 변수에 저장
+	// 멤버 변수 값으로 ARP table 업데이트
+	// timer stop 코드
+	// dlg에 ARP table 업데이트 코드
 
 
 	return bSuccess;
@@ -154,6 +210,8 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 // 
 // TODO
 // 
-// 받아와서 ARP cache table 업데이트
+// IP Layer에 요청해서 멤버 변수에 저장 (참조 형식)
+// 
+// 멤버 변수 이용해서 ARP cache table 업데이트
 //
 //

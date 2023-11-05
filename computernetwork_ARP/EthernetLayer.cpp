@@ -30,10 +30,16 @@
 //
 
 //
-// 
+// 상위 레이어(ARP Layer)에서 패킷 받아오는 함수
+//  
 //
 //
 
+
+//
+// 하위 레이어(NI Layer)로 패킷 전송하는 함수
+//
+//
 
 
 // 상위 레이어(ARP Layer)로 패킷 전송하는 함수
@@ -52,6 +58,7 @@
 	// 
 	// 패킷 받아서 이더넷 헤더 타입으로 캐스팅
 	// 이더넷 헤더의 목적지 MAC 주소가 broadcast 또는 source MAC 주소인지 확인
-	// broadcast, source MAC 주소면 packet을 상위 레이어(ARP Layer)로 이더넷 헤더 떼고 ARP 헤더만(ppayload) 전송 (전송 함수 따로 만들기)
+	// source MAC 주소면 packet을 상위 레이어(ARP Layer)의 receive_reply로 이더넷 헤더 떼고 ARP 헤더만(ppayload) 전송 (전송 함수 따로 만듦)
+	// broadcast면 packet을 상위 레이어(ARP Layer)의 receive_request로 ARP 헤더만 전송
 	
 //}
