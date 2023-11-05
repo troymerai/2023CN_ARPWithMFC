@@ -59,6 +59,9 @@ CcomputernetworkARPDlg::CcomputernetworkARPDlg(CWnd* pParent /*=nullptr*/)
 void CcomputernetworkARPDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	// 변수이름
+	DDX_Control(pDX, IDC_LIST1, m_list_arp_cache);
+	DDX_Control(pDX, IDC_IPADDRESS2, m_ip_address);
 }
 
 BEGIN_MESSAGE_MAP(CcomputernetworkARPDlg, CDialogEx)
@@ -66,7 +69,6 @@ BEGIN_MESSAGE_MAP(CcomputernetworkARPDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CcomputernetworkARPDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON3, &CcomputernetworkARPDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CcomputernetworkARPDlg::OnBnClickedButton4)
 	ON_CBN_SELCHANGE(IDC_COMBOBOXEX1, &CcomputernetworkARPDlg::OnCbnSelchangeComboboxex1)
 	ON_BN_CLICKED(IDC_BNT_ARP_DEL, &CcomputernetworkARPDlg::OnBnClickedBntArpDel)
@@ -75,6 +77,11 @@ BEGIN_MESSAGE_MAP(CcomputernetworkARPDlg, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST8, &CcomputernetworkARPDlg::OnLbnSelchangeList8)
 	ON_BN_CLICKED(IDC_BNT_ARP_ADD, &CcomputernetworkARPDlg::OnBnClickedBntArpAdd)
 	ON_LBN_SELCHANGE(IDC_LIST, &CcomputernetworkARPDlg::OnLbnSelchangeList)
+	ON_LBN_SELCHANGE(IDC_LIST_ARP, &CcomputernetworkARPDlg::OnLbnSelchangeListArp)
+	ON_BN_CLICKED(IDC_BNT_LIST_ITEM_DEL, &CcomputernetworkARPDlg::OnBnClickedBntListItemDel)
+	ON_BN_CLICKED(IDC_BNT_SEND, &CcomputernetworkARPDlg::OnBnClickedBntSend)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CcomputernetworkARPDlg::OnLvnItemchangedList1)
+	ON_EN_CHANGE(IDC_NETADDRESS2, &CcomputernetworkARPDlg::OnEnChangeNetaddress2)
 END_MESSAGE_MAP()
 
 
@@ -110,6 +117,13 @@ BOOL CcomputernetworkARPDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	CRect rect;
+	m_list_arp_cache.GetClientRect(&rect);
+
+	m_list_arp_cache.InsertColumn(0, _T("IP Address", LVCFMT_LEFT, 500));
+	m_list_arp_cache.InsertColumn(1, _T("Ethernet Address", LVCFMT_LEFT, 500));
+	m_list_arp_cache.InsertColumn(2, _T("Status", LVCFMT_LEFT, 500));
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -176,13 +190,12 @@ void CcomputernetworkARPDlg::OnLvnItemchangedMfcshelllist1(NMHDR* pNMHDR, LRESUL
 void CcomputernetworkARPDlg::OnBnClickedButton1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	// IP Layer에 source IP 주소 전달 함수 넣기
 }
 
 
-void CcomputernetworkARPDlg::OnBnClickedButton3()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
+
 
 
 void CcomputernetworkARPDlg::OnBnClickedButton4()
@@ -191,9 +204,14 @@ void CcomputernetworkARPDlg::OnBnClickedButton4()
 }
 
 
+// Source NIC 선택하는 곳
 void CcomputernetworkARPDlg::OnCbnSelchangeComboboxex1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	// NI Layer에서 네트워크 어댑터 목록 얻어오는 코드 추가
+
+	
 }
 
 
@@ -244,4 +262,86 @@ void CcomputernetworkARPDlg::OnBnClickedBntArpAdd()
 void CcomputernetworkARPDlg::OnLbnSelchangeList()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CcomputernetworkARPDlg::OnLbnSelchangeListArp()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CcomputernetworkARPDlg::OnBnClickedBntListItemDel()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// ARP Cache의 item 삭제 버튼
+
+	int count = m_list_arp_cache.GetItemCount();
+
+	for (int i = count; i >= 0; i--) {// 모든 항목 조사
+		if (m_list_arp_cache.GetItemState(i, LVIS_SELECTED) != 0) //선택된 항목을 삭제
+			m_list_arp_cache.DeleteItem(i);
+	}
+}
+
+
+void CcomputernetworkARPDlg::OnBnClickedBntSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// ip 주소 보내는 버튼
+
+	// 추가할 행의 위치를 얻어오기 위해서 리스트 컨트롤의 항목 개수를 얻어온다.
+	CString strIPAddress;
+	m_ip_address.GetWindowText(strIPAddress);
+
+	int randomValue = rand() % 5;
+
+	int nItemNum = m_list_arp_cache.GetItemCount();
+	m_list_arp_cache.InsertItem(nItemNum, strIPAddress);
+
+	CString strRandomValue;
+	strRandomValue.Format(_T("%d"), randomValue);
+	m_list_arp_cache.SetItemText(nItemNum, 1, strRandomValue);
+
+	m_ip_address.SetAddress(0, 0, 0, 0);
+
+	// IP Layer에 Destination Ip 주소 전달 함수 넣기
+
+	// 타이머 start 함수
+
+	// status를 incomplete로 만드는 함수
+
+	// ARP Layer에 
+	// Source MAC address
+	// Source IP address
+	// Destination IP address 
+	// 있는 지 ARP cache table 조회 함수
+	//
+	// 있으면 dlg에 띄우기
+	// 없으면 ARP Layer에 ARP 요청 함수
+	//		요청 후 3분 안에 ARP cache이 업데이트 됐다는 신호가 오면(?) dlg에 띄우기
+
+
+
+}
+
+
+void CcomputernetworkARPDlg::OnLvnItemchangedList1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CcomputernetworkARPDlg::OnEnChangeNetaddress2()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	// Ethernet Layer에서 MAC 주소 추출하는 함수 넣기
 }
