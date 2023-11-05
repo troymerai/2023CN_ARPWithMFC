@@ -51,5 +51,4 @@ public:
 	CIPAddressCtrl m_ip_address;
 	afx_msg void OnBnClickedBntSend();
 	afx_msg void OnLvnItemchangedList1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnEnChangeNetaddress2();
 };
