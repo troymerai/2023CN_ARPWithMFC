@@ -31,22 +31,24 @@ void CIPLayer::ResetAddr() {
 	memset(destIP, 0, sizeof(destIP));
 }
 
-
+///// 
+// ARP Layer에서 확인하는 걸로 변경
+// 
 // 하위 레이어(Ethernet Layer)에서 payload 받는 함수
-BOOL CIPLayer::Receive(unsigned char* ppayload) {
-
-	
-
-	return true;
-}
+//BOOL CIPLayer::Receive(unsigned char* ppayload) {
+// return true;
+//}
 
 // dlg에서 Destination IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-void CIPLayer::SetDestIP(unsigned char* IpAddress) {
+unsigned char* CIPLayer::GetDestIP(unsigned char* IpAddress) {
 
+	return destIP;
 }
 
 
 // dlg에서 Source IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-void CIPLayer::SetSourceIP(unsigned char* IpAddress) {
+unsigned char* CIPLayer::GetSourceIP(unsigned char* IpAddress) {
 
+	return sourceIP;
 }
+
