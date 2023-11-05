@@ -97,10 +97,25 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 
 	BOOL bSuccess = FALSE;
 
-	// IPLayer에 내 ip 주소 요청
-	//(CIPLayer*)GetUpperLayer()->GetSourceIP()
+	// ARP header의 목적지 ip 주소가 내 ip와 같은 지 IP Layer에 요청
+	
+	// 상위 계층 (IP Layer)의 참조를 얻음
+	CIPLayer* pIPLayer = dynamic_cast<CIPLayer*>(this->GetUpperLayer(0));
 
-	// 목적지 ip 주소가 자신의 ip 주소와 같은 지 확인
+	// 목적지 IP 주소가 내 IP와 같은 경우
+	if (pIPLayer != nullptr && pIPLayer->IsMyIpAddress(pFrame->ip_destaddr)) {
+		
+		// TODO
+		// 
+		// ARP cache table에 Destination MAC 주소 업데이트
+		// Dlg에 업데이트하는 함수
+		// 타이머 stop함수
+		// status를 complete로 바꿔주는 함수
+		
+		
+	}
+
+
 
 	
 

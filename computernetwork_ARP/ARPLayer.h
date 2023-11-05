@@ -31,9 +31,9 @@ public:
 		unsigned char prot_size;  // Protocol size (IPv4搁 4)
 		unsigned short op;        // Operation code (1 for request, 2 for reply)
 		unsigned char MAC_srcaddr[6]; // 免惯瘤 MAC 林家
-		unsigned char IP_srcaddr[4];       // 免惯瘤 IP 林家
-		unsigned char MAC_dstaddr[6]; // 格利瘤 MAC 林家 (0 for request)
-		unsigned char IP_dstaddr[4];       // 格利瘤 IP 林家
+		unsigned char ip_srcaddr[4];       // 免惯瘤 IP 林家
+		unsigned char MAC_destaddr[6]; // 格利瘤 MAC 林家 (0 for request)
+		unsigned char ip_destaddr[4];       // 格利瘤 IP 林家
 	} ARP_HEADER, * PARP_HEADER;
 
 	ARP_HEADER arp_header;
