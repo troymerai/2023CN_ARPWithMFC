@@ -13,8 +13,19 @@ public:
 
 	// 여기에 함수 선언
 
-	// 주석 달아야 함
-	void ResetHeader(int iosel);
+	// IP주소 저장 변수 초기화 함수
+	void ResetAddr();
+
+	// 하위 레이어(Ethernet Layer)에서 payload 받는 함수
+	BOOL CIPLayer::Receive(unsigned char* ppayload);
+
+	// dlg에서 Destination IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
+	void CIPLayer::SetDestIP(unsigned char* IpAddress);
+	// dlg에서 Source IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
+	void CIPLayer::SetSourceIP(unsigned char* IpAddress);
+
+
+
 
 
 };
