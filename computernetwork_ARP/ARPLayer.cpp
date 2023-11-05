@@ -5,12 +5,32 @@
 
 CARPLayer::CARPLayer(char* pName) : CBaseLayer(pName) {
 	// 생성자
+	ResetHeader();
+
 }
 
 CARPLayer:: ~CARPLayer() {
-
+	// 소멸자
 }
 
+// ARP 헤더 초기화
+void CARPLayer::ResetHeader() {
+	// 하드웨어 타입 설정 (이더넷은 1)
+	arp_header.hard_type = htons(1);  
+	// 프로토콜 타입 설정 (IPv4는 0x0800)
+	arp_header.prot_type = htons(0x0800);
+	// 하드웨어 크기 설정 (이더넷은 6)
+	arp_header.hard_size = 6;
+	// 프로토콜 크기 설정 (IPv4는 4)
+	arp_header.prot_size = 4;
+	// 작업 코드 초기화 (0으로 설정)
+	arp_header.op = 0;
+	// MAC 주소들과 IP 주소들 초기화 (0으로 설정)
+	memset(arp_header.MAC_srcaddr, 0, sizeof(arp_header.MAC_srcaddr));
+	memset(arp_header.ip_srcaddr, 0, sizeof(arp_header.ip_srcaddr));
+	memset(arp_header.MAC_destaddr, 0, sizeof(arp_header.MAC_destaddr));
+	memset(arp_header.ip_destaddr, 0, sizeof(arp_header.ip_destaddr));
+}
 
 
 //
@@ -84,7 +104,7 @@ BOOL CARPLayer::Send() {
 // TODO
 // 
 // Destination MAC address가 ARP cache table에 있는 지 확인
-// 없으면 Ethernet Layer에 Destination MAC address 요청 (Ethernet Layer의 MAC 주소 추출 함수 그대로 사용)
+// 없으면 Ethernet Layer에 Destination MAC address 요청 (Ethernet Layer에 MAC 주소 반환 함수 참조해서 사용)
 // 있다면 ARP reply 패킷 작성
 //
 
@@ -116,21 +136,9 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 	}
 
 
-
-	
-
-
 	return bSuccess;
 }
-// 
-// TODO
-// 
-// ARP cache table에 Destination MAC 주소 업데이트
-// Dlg에 업데이트하는 함수
-// 타이머 stop함수
-// status를 complete로 바꿔주는 함수
-// 
-//
+
 
 //
 // IP Layer에서 Destination IP 주소 받아오는 함수

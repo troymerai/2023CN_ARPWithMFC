@@ -23,6 +23,9 @@ public:
 	// 하위 레이어(Ethernet Layer)에서 payload 받는 함수
 	BOOL CARPLayer::Receive(unsigned char* ppayload);
 
+	// ARP 헤더 초기화
+	void CARPLayer::ResetHeader();
+
 	// ARP Header 
 	typedef struct _ARP_HEADER {
 		unsigned short hard_type; // Hardware type (이더넷이면 1)
