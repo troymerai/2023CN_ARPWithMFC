@@ -14,8 +14,8 @@ public:
 
 	// ARP request 패킷 작성 함수
 	unsigned char* CARPLayer::make_request();
-	// ARP reply 패킷 작성 함수
-	unsigned char* CARPLayer::make_reply();
+	// ARP reply 패킷 작성 함수 매개변수는 이더넷 레이어에서 받은 패킷
+	unsigned char* CARPLayer::make_reply(unsigned char* pPacket);
 
 	// 하위 레이어(Ethernet Layer)로 ARP 패킷 (request, reply 둘 다) 전송 함수
 	BOOL CARPLayer::Send();

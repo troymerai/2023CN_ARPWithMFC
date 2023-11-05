@@ -23,13 +23,17 @@ public:
 	// 하위 레이어(Ethernet Layer)에서 payload 받는 함수
 	//BOOL CIPLayer::Receive(unsigned char* ppayload);
 
-	// dlg에서 Destination IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-	unsigned char* CIPLayer::GetDestIP(unsigned char* IpAddress);
-	// dlg에서 Source IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-	unsigned char* CIPLayer::GetSourceIP(unsigned char* IpAddress);
+	// dlg에서 Destination IP 주소 받아서 변수에 저장하는 함수
+	void CIPLayer::SetDestIP(unsigned char* IpAddress);
+	// dlg에서 Source IP 주소 받아서 변수에 저장하는 함수
+	void CIPLayer::SetSourceIP(unsigned char* IpAddress);
+
+	// Destination IP 주소를 반환하는 함수
+	unsigned char* CIPLayer::GetDestIP();
+	// Source IP 주소를 반환하는 함수
+	unsigned char* CIPLayer::GetSourceIP();
 
 	// 매개변수로 받은 주소가 내 ip 주소와 같은 지 확인하는 함수
 	BOOL CIPLayer::IsMyIpAddress(unsigned char* IpAddress);
-
 
 };

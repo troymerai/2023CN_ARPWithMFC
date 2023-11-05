@@ -128,7 +128,7 @@ UINT CNILayer::ThreadFunction_RECEIVE(LPVOID pParam) {
 
 // 패킷을 받아 상위 계층(여기서는 Ethernet Layer)로 전달하는 함수
 BOOL CNILayer::Receive(unsigned char* pkt) {
-	//endian 변환 필요?
+	
 	if (pkt == nullptr) {
 		return FALSE;
 	}

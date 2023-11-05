@@ -39,15 +39,31 @@ void CIPLayer::ResetAddr() {
 // return true;
 //}
 
-// dlg에서 Destination IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-unsigned char* CIPLayer::GetDestIP(unsigned char* IpAddress) {
+// dlg에서 Destination IP 주소 받아서 변수에 저장하는 함수
+void CIPLayer::SetDestIP(unsigned char* IpAddress) {
+
+	// 매개변수로 전달받은 IP 주소를 destIP에 복사
+	memcpy(destIP, IpAddress, sizeof(destIP));
+
+}
+
+// dlg에서 Source IP 주소 받아서 변수에 저장하는 함수
+void CIPLayer::SetSourceIP(unsigned char* IpAddress) {
+
+	// 매개변수로 전달받은 IP 주소를 destIP에 복사
+	memcpy(sourceIP, IpAddress, sizeof(sourceIP));
+
+}
+
+// Destination IP 주소를 반환하는 함수
+unsigned char* CIPLayer::GetDestIP() {
 
 	return destIP;
 }
 
 
-// dlg에서 Source IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
-unsigned char* CIPLayer::GetSourceIP(unsigned char* IpAddress) {
+// Source IP 주소를 반환하는 함수
+unsigned char* CIPLayer::GetSourceIP() {
 
 	return sourceIP;
 }

@@ -39,10 +39,10 @@ void CARPLayer::ResetHeader() {
 // TODO
 // 
 // source ip address가 있는 지 확인
-// 없으면 IP Layer에 Source ip address 요청해서 ARP cache table 업데이트
+// 없으면 IP Layer에 Source ip address 요청해서(함수 만듦)  ARP cache table 업데이트
 // 
 // source MAC address가 있는 지 확인
-// 없으면 Ethernet Layer에 Source MAC address 요청해서 ARP cache table 업데이트
+// 없으면 Ethernet Layer에 Source MAC address 요청해서(함수 만들기) ARP cache table 업데이트
 // 
 // 
 
@@ -60,23 +60,33 @@ unsigned char* CARPLayer::make_request() {
 
 
 	// 이더넷 헤더 작성 함수
+	//
+	// TODO
+	//
+	// source MAC 주소 있는 지 확인하고 없으면 이더넷 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
+	// 나머지는 고정값 넣어주기
+	//
 
 	// ARP 헤더 작성 함수
+	// 
+	// TODO
+	// 
+	// source MAC는 위에서 저장한 변수에서 받아와서 넣어주고
+	// source IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
+	// destination IP 주소 없는 지 확인하고 없으면 IP 레이어에 요청해서 변수에 받아와서 저장하고 넣어주기
+	// 나머지는 고정값 넣어주기
+	//
+
+
 
 	return pPacket;
 }
 
 //
 // ARP reply 패킷 작성 함수
-unsigned char* CARPLayer::make_reply() {
-	unsigned char* pPacket = nullptr;
+unsigned char* CARPLayer::make_reply(unsigned char* pPacket) {
 
-	// 패킷의 크기에 맞게 메모리 할당
-	unsigned int packetSize = 42;
-	pPacket = new unsigned char[packetSize];
-
-	// 패킷 내용 초기화
-	memset(pPacket, 0, packetSize);
+	// 이더넷 레이어에서 올라온 패킷에서 이더넷 헤더를 까고 
 
 	// 이더넷 헤더에 자기 MAC 넣는 함수
 
@@ -129,8 +139,7 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 		// 
 		// ARP cache table에 Destination MAC 주소 업데이트
 		// Dlg에 업데이트하는 함수
-		// 타이머 stop함수
-		// status를 complete로 바꿔주는 함수
+		
 		
 		
 	}
