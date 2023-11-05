@@ -28,8 +28,8 @@ public:
 	// dlg에서 Source IP 주소 받아서 변수에 저장, ARP Layer에 전달하는 함수
 	unsigned char* CIPLayer::GetSourceIP(unsigned char* IpAddress);
 
-
-
+	// 매개변수로 받은 주소가 내 ip 주소와 같은 지 확인하는 함수
+	BOOL CIPLayer::IsMyIpAddress(unsigned char* IpAddress);
 
 
 };

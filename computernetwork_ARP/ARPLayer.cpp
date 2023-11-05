@@ -69,15 +69,14 @@ unsigned char* CARPLayer::make_reply() {
 
 //
 // 하위 레이어(Ethernet Layer)로 ARP 패킷 (request, reply 둘 다) 전송 함수
+BOOL CARPLayer::Send() {
 
 
+	BOOL bSuccess = FALSE;
 
+	return bSuccess;
+}
 
-
-//
-// 상위 레이어(IP Layer)에서 payload 받는 함수
-//
-//
 
 //
 // ARP 테이블 조회 함수 (Destination용)
@@ -89,8 +88,25 @@ unsigned char* CARPLayer::make_reply() {
 // 있다면 ARP reply 패킷 작성
 //
 
-//
+
 // 하위 레이어(Ethernet Layer)에서 payload 받는 함수
+BOOL CARPLayer::Receive(unsigned char* ppayload) {
+
+	// 받은 데이터를 ARP header 구조체로 캐스팅
+	PARP_HEADER pFrame = (PARP_HEADER)ppayload;
+
+	BOOL bSuccess = FALSE;
+
+	// IPLayer에 내 ip 주소 요청
+	//(CIPLayer*)GetUpperLayer()->GetSourceIP()
+
+	// 목적지 ip 주소가 자신의 ip 주소와 같은 지 확인
+
+	
+
+
+	return bSuccess;
+}
 // 
 // TODO
 // 

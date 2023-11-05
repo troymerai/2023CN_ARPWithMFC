@@ -52,3 +52,14 @@ unsigned char* CIPLayer::GetSourceIP(unsigned char* IpAddress) {
 	return sourceIP;
 }
 
+// 매개변수로 받은 주소가 내 ip 주소와 같은 지 확인하는 함수
+BOOL CIPLayer::IsMyIpAddress(unsigned char* IpAddress) {
+
+	BOOL isMyIP = FALSE;
+
+	if (memcmp(IpAddress, sourceIP, sizeof(sourceIP)) == 0) {
+		isMyIP = TRUE;
+	}
+	
+	return isMyIP;
+}
