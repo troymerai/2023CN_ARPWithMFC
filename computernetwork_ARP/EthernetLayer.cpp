@@ -6,19 +6,19 @@
 
 
 // 출발지 MAC 주소
-//unsigned char sourceMAC[6];
+unsigned char sourceMAC[6];
 // 목적지 MAC 주소
-//unsigned char destMAC[6];
+unsigned char destMAC[6];
 
-//CEthernetLayer::CEthernetLayer(char* pName) :CBaseLayer(pName) {
+CEthernetLayer::CEthernetLayer(char* pName) :CBaseLayer(pName) {
 
 	// 생성자
-//}
+}
 
-//CEthernetLayer:: ~CEthernetLayer() {
+CEthernetLayer:: ~CEthernetLayer() {
 
 	// 소멸자
-//}
+}
 
 
 //
@@ -43,16 +43,17 @@
 
 
 // 상위 레이어(ARP Layer)로 패킷 전송하는 함수
-//BOOL CEthernetLayer::Send(unsigned char* ppayload) {
+BOOL CEthernetLayer::Send(unsigned char* ppayload) {
 	// 
 	// TODO
 	// 
 	// 상위 레이어로 전송 코드
 	// 
-//}
+	return TRUE;
+}
 
 // 하위 레이어(NI Layer)에서 패킷 받아서 MAC 주소 확인하는 함수
-//BOOL CEthernetLayer::Receive(unsigned char* pPacket) {
+BOOL CEthernetLayer::Receive(unsigned char* pPacket) {
 	// 
 	// TODO
 	// 
@@ -60,5 +61,5 @@
 	// 이더넷 헤더의 목적지 MAC 주소가 broadcast 또는 source MAC 주소인지 확인
 	// source MAC 주소면 packet을 상위 레이어(ARP Layer)의 receive_reply로 이더넷 헤더 떼고 ARP 헤더만(ppayload) 전송 (전송 함수 따로 만듦)
 	// broadcast면 packet을 상위 레이어(ARP Layer)의 receive_request로 ARP 헤더만 전송
-	
-//}
+	return TRUE;
+}
