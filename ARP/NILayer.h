@@ -21,13 +21,15 @@ public:
     void            SetAdapterComboBox(CComboBox& adpaterlist);
     //Get MacAddressList CStringArray
     void            GetMacAddressList(CStringArray& adapterlist);
-    /*Get IPv4, IPv6 address from selected Adapter
-    !!You need to set adapter first!!
-    */
+
+    // 선택한 네트워크 어댑터의 IP 주소를 가져오는 함수
+    // 매개변수로 ipv4 ipv6 값을 저장할 문자열을 받음
+    // 네트워크 어댑터를 먼저 설정해야 함
     void            GetIPAddress(CString& ipv4addr, CString& ipv6addr);
+
     //if canread is True Thread activate
     static UINT     ThreadFunction_RECEIVE(LPVOID pParam);
-    //set canread option reverse
+    // NI Layer 패킷 수신 상태 변경 함수
     void Receiveflip();
 protected:
     pcap_if_t* allDevices; //all information of adapters
