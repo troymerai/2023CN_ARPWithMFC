@@ -152,13 +152,15 @@ sequenceDiagram
 	participant H as network
 
 	H->>G: ARP reply 패킷 전송
-	alt is 목적지 MAC이 내 MAC과 같다면
-		G->>E: ARP reply ARP프레임만 전송
+	G->>F: ARP reply 패킷 전송
+	alt 목적지 MAC이 내 MAC과 같다면
+		F->>E: ARP reply ARP프레임만 전송
 	else 목적지 MAC이 내 MAC과 다르다면
-		Note over G,E: dicard
+		Note over F,E: dicard
 	end
 	E->>E: ARP cache table 업데이트
 	C->>E: ARP cache table 업데이트 확인
+	Note over C,E: CARPDlg::OnTimer
 	C->>C: ARP cache table UI 업데이트
 	A->>C: ARP cache table 확인
 ```
