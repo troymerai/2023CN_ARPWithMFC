@@ -105,19 +105,19 @@ BOOL CIPLayer::Send(unsigned char* ppayload, int nlength){
     return bSuccess;
 }
 
-// IP 계층 패킷 수신 함수
-BOOL CIPLayer::Receive(unsigned char* ppayload){
+// IP Layer 패킷 수신 함수
+BOOL CIPLayer::Receive(unsigned char* ppayload) {
 
-    // 패킷 수신 여부 저장 변수 선언
+    // 패킷 수신 성공 여부
     BOOL bSuccess = FALSE;
 
-    // argument로 받은 payload를 IP헤더 구조체로 타입 캐스팅
+    // argument로 받은 payload를 IP 헤더 구조체로 형변환
     PIP_HEADER pFrame = (PIP_HEADER)ppayload;
 
-    // 수신한 패킷의 목적지 IP 주소와 현재 레이어의 출발지 IP 주소가 같다면
-    if(memcmp(pFrame->ip_dstaddr, m_sHeader.ip_srcaddr, sizeof(m_sHeader.ip_srcaddr)) == 0){
-        
-        // 상위 레이어로 패킷의 데이터를 전달 && 결과를 bSuccess에 저장
+    // 목적지 IP 주소가 자신의 IP 주소와 같다면
+    if (memcmp(pFrame->ip_dstaddr, m_sHeader.ip_srcaddr, sizeof(m_sHeader.ip_srcaddr)) == 0) {
+
+        // 상위 레이어로 데이터 전달
         bSuccess = mp_aUpperLayer[0]->Receive(pFrame->ip_data);
     }
 

@@ -46,26 +46,20 @@ inline void CARPLayer::ResetHeader() {
 
 
 // ARP 계층 패킷 수신 함수
-BOOL CARPLayer::Receive(unsigned char* ppayload) {							
+BOOL CARPLayer::Receive(unsigned char* ppayload) {
 	PARP_HEADER arp_data = (PARP_HEADER)ppayload;
 
 	// ARP Request 패킷을 받으면 ARP Reply 패킷을 생성하여 응답
 	switch (arp_data->op) {
-	case ARP_OP_REQUEST:	
-		// 목적지 IP 주소가 자신의 IP 주소와 같다면
-		if (memcmp(arp_data->prot_dstaddr, myip, IP_ADDR_SIZE) == 0)
-			// 자신의 MAC 주소를 목적지 MAC 주소로 설정합니다.
-			memcpy(arp_data->hard_dstaddr, mymac, MAC_ADDR_SIZE);
-		else
-		// 목적지 IP 주소가 자신의 IP와 다르다면 
-			// ARP 테이블에서 해당 IP 주소를 찾아 MAC 주소를 목적지 MAC 주소로 설정
-			for (auto& node : m_arpTable) {
-				if (node == arp_data->prot_dstaddr) {
-					memcpy(arp_data->hard_dstaddr, node.hard_addr, MAC_ADDR_SIZE);
-					node.spanTime = CTime::GetCurrentTime();
-					break;
-				}
+	case ARP_OP_REQUEST:
+		// ARP 테이블에서 해당 IP 주소를 찾아 MAC 주소를 목적지 MAC 주소로 설정
+		for (auto& node : m_arpTable) {
+			if (node == arp_data->prot_dstaddr) {
+				memcpy(arp_data->hard_dstaddr, node.hard_addr, MAC_ADDR_SIZE);
+				node.spanTime = CTime::GetCurrentTime();
+				break;
 			}
+		}
 		// opcode를 ARP Reply(0x0200)로 설정
 		arp_data->op = ARP_OP_REPLY;
 		// 출발지 주소와 목적지 주소를 swap
@@ -75,8 +69,8 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 		// ARP Reply 패킷을 하위 레이어(Ethernet Layer)로 전송
 		return mp_UnderLayer->Send((unsigned char*)arp_data, ARP_HEADER_SIZE);
 		break;
-	//ARP Reply 패킷을 받으면 ARP 테이블 업데이트
-	case ARP_OP_REPLY:	
+		//ARP Reply 패킷을 받으면 ARP 테이블 업데이트
+	case ARP_OP_REPLY:
 		for (auto& node : m_arpTable) {
 			if (node == arp_data->prot_srcaddr) {
 				memcpy(node.hard_addr, arp_data->hard_srcaddr, MAC_ADDR_SIZE);
@@ -86,11 +80,11 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 			}
 		}
 		break;
-	// ReRequest 받은 경우
+		// ReRequest 받은 경우
 	case ARP_OP_RREQUEST:
 		// 아직 구현 안함
 		break;
-	// ReReply 받은 경우
+		// ReReply 받은 경우
 	case ARP_OP_RREPLY:
 		// 아직 구현 안함
 		break;
@@ -103,6 +97,7 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 	// 패킷 수신 성공값 반환
 	return true;
 }
+
 
 // ARP 계층 패킷 전송 함수
 BOOL CARPLayer::Send(unsigned char* ppayload, int nlength) {
@@ -150,6 +145,11 @@ BOOL CARPLayer::Send(unsigned char* ppayload, int nlength) {
 
 	// 출발지 주소와 목적지 주소 설정
 	setSrcAddr(m_ether->GetSourceAddress(), ip_data->srcaddr);
+	
+	// 
+	// 여기서 request에서 ARP 헤더의 dest IP를 braodcast로 채움? -> 디버깅 해보기
+	// 디버깅 찍는 거 다시 공부하기
+	// 
 	setDstAddr(broadcastAddr, ip_data->dstaddr);
 
 	// 패킷을 하위 레이어(여기서는 Ethernet Layer)로 전송

@@ -109,6 +109,10 @@ BEGIN_MESSAGE_MAP(CARPDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SELECT, &CARPDlg::OnBnClickedButtonSelect)
 	ON_BN_CLICKED(IDC_BUTTON_SEND_ARP, &CARPDlg::OnBnClickedButtonSendArp)
 	ON_NOTIFY(IPN_FIELDCHANGED, IDC_IPADDRESS_DST, &CARPDlg::OnIpnFieldchangedIpaddressDst)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL, &CARPDlg::OnLvnItemchangedListControl)
+	ON_EN_CHANGE(IDC_EDIT_HW_ADDR, &CARPDlg::OnEnChangeEditHwAddr)
+	ON_BN_CLICKED(IDC_BUTTON_G_ARP_SEND, &CARPDlg::OnBnClickedButtonGArpSend)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL_PROXY, &CARPDlg::OnLvnItemchangedListControlProxy)
 END_MESSAGE_MAP()
 
 
@@ -492,5 +496,38 @@ void CARPDlg::OnIpnFieldchangedIpaddressDst(NMHDR* pNMHDR, LRESULT* pResult)
 	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	// 초기값 0
+	*pResult = 0;
+}
+
+
+void CARPDlg::OnLvnItemchangedListControl(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CARPDlg::OnEnChangeEditHwAddr()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// __super::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CARPDlg::OnBnClickedButtonGArpSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CARPDlg::OnLvnItemchangedListControlProxy(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
 }
