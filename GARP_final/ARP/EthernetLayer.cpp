@@ -85,7 +85,7 @@ BOOL CEthernetLayer::Receive(unsigned char* ppayload)
 	BOOL bSuccess = FALSE;
 
 	// 목적지 주소를 확인
-	if(memcmp(pFrame->mac_dstaddr, m_sHeader.mac_srcaddr, sizeof(m_sHeader.mac_srcaddr))==0){//주소 확인
+	if(memcmp(pFrame->mac_dstaddr, m_sHeader.mac_srcaddr, sizeof(m_sHeader.mac_srcaddr))==0){
 		
 		// enet_type을 기준으로 이더넷 프레임의 데이터를 넘겨줄 레이어 지정
 

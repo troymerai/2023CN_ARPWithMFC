@@ -70,4 +70,8 @@ public:
 	afx_msg void OnBnClickedButtonSelect();
 	afx_msg void OnBnClickedButtonSendArp();
 	afx_msg void OnIpnFieldchangedIpaddressDst(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnLvnItemchangedListControl(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnEnChangeEditHwAddr();
+	afx_msg void OnBnClickedButtonGArpSend();
+	afx_msg void OnLvnItemchangedListControlProxy(NMHDR* pNMHDR, LRESULT* pResult);
 };
