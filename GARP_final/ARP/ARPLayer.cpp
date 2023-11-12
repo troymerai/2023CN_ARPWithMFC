@@ -99,8 +99,8 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 }
 
 
-// ARP 계층 패킷 전송 함수
-BOOL CARPLayer::Send(unsigned char* ppayload, int nlength) {
+// ARP 계층 ARP 패킷 전송 함수
+BOOL CARPLayer::SendARP(unsigned char* ppayload, int nlength) {
 
 	// 전달받은 payload를 IP헤더 타입으로 캐스팅하여 ip data 확보
 	PIP_HEADER ip_data = (PIP_HEADER)ppayload;
@@ -158,6 +158,38 @@ BOOL CARPLayer::Send(unsigned char* ppayload, int nlength) {
 	// 패킷 전송 성공값 반환
 	return true;
 }
+
+////////////////// ARP 패킷이랑 GARP 패킷이랑 어떻게 구분하지..?
+
+// ARP 계층 GARP 패킷 전송 함수
+BOOL CARPLayer::SendGARP(unsigned char* ppayload, int nlength) {
+
+	// 전달받은 payload를 IP헤더 타입으로 캐스팅하여 ip data 확보
+	PIP_HEADER ip_data = (PIP_HEADER)ppayload;
+
+	// 이더넷 레이어 참조
+	CEthernetLayer* m_ether = (CEthernetLayer*)mp_UnderLayer;
+
+	// 새로운 ARP 노드 생성
+	ARP_NODE newNode(ip_data->dstaddr, m_ether->GetSourceAddress());
+
+	// opcode를 ARP request(0x0100)로 설정
+	setOpcode(ARP_OP_REQUEST);
+
+	// 출발지 주소와 목적지 주소 설정
+	setSrcAddr(m_ether->GetSourceAddress(), ip_data->srcaddr);
+
+	// GARP에서는 목적지 IP와 목적지 MAC이 자신의 IP와 MAC이므로 자신의 주소로 설정
+	setDstAddr(m_ether->GetSourceAddress(), ip_data->srcaddr);
+
+	// 패킷을 하위 레이어(여기서는 Ethernet Layer)로 전송
+	return ((CEthernetLayer*)mp_UnderLayer)->Send((unsigned char*)&m_sHeader, ARP_HEADER_SIZE);
+
+	// 패킷 전송 성공값 반환
+	return true;
+}
+
+
 
 // IP 주소가 ARP cache table에 있는 지 확인하는 함수
 int CARPLayer::inCache(const unsigned char* ipaddr) {

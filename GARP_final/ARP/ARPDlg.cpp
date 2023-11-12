@@ -20,6 +20,7 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
+
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
@@ -113,6 +114,7 @@ BEGIN_MESSAGE_MAP(CARPDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_HW_ADDR, &CARPDlg::OnEnChangeEditHwAddr)
 	ON_BN_CLICKED(IDC_BUTTON_G_ARP_SEND, &CARPDlg::OnBnClickedButtonGArpSend)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL_PROXY, &CARPDlg::OnLvnItemchangedListControlProxy)
+	ON_NOTIFY(IPN_FIELDCHANGED, IDC_IPADDRESS_SRC, &CARPDlg::OnIpnFieldchangedIpaddressSrc)
 END_MESSAGE_MAP()
 
 
@@ -479,7 +481,7 @@ void CARPDlg::OnBnClickedButtonSendArp()
 		}
 
 		// 하위 레이어(여기서는 IP Layer)로 ARP 요청 전달
-		mp_UnderLayer->Send((unsigned char*)"dummy Data", 11);
+		mp_UnderLayer->Send((unsigned char*)"ARP Request", 11);
 	}
 	// 네트워크 어댑터가 설정되지 않았다면
 	else {
@@ -507,7 +509,7 @@ void CARPDlg::OnLvnItemchangedListControl(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-
+// GARP용 MAC 주소 넣는 곳
 void CARPDlg::OnEnChangeEditHwAddr()
 {
 	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
@@ -516,18 +518,60 @@ void CARPDlg::OnEnChangeEditHwAddr()
 	// 이 알림 메시지를 보내지 않습니다.
 
 	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	//20231112 GARP modify
+	//CString strMacAddress; 지역 변수 대신 멤버 변수 사용
+	GetDlgItemText(IDC_EDIT_HW_ADDR, m_strMacAddress);
 }
 
-
+// GARP 요청 날리는 곳
 void CARPDlg::OnBnClickedButtonGArpSend()
 {
+
+
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	// 20231112 GARP modify
+	// MAC 주소를 바이트 배열로 변환
+	unsigned char mac[MAC_ADDR_SIZE];
+	sscanf_s(CW2A(m_strMacAddress.GetString()), "%02x:%02x:%02x:%02x:%02x:%02x", &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
+
+	//////////////////////////////////////////////////////////////////////////////
+	// ARP 시나리오를 먼저 진행하면 빼도 되나? 모르겠음
+	// 
+	// 출발지 IP 주소와 목적지 IP 주소를 저장할 배열 선언
+	unsigned char srcip[IP_ADDR_SIZE] = { 0, }, dstip[IP_ADDR_SIZE] = { 0, };
+
+	// 현재 UI(app 계층)에서 소스 IP 주소와 목적지 IP 주소를 가져옴
+	m_SrcIPADDRESS.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
+	m_DstIPADDRESS.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
+
+	// 출발지 IP 주소와 목적지 IP 주소 설정 
+	// IP Layer에 전달
+	m_IPLayer->SetSourceAddress(srcip);
+	m_IPLayer->SetDestinAddress(dstip);
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	// MAC 주소 설정
+	m_EtherLayer->SetSourceAddress(mac);
+
+	// GARP 요청 전달
+	mp_UnderLayer->Send((unsigned char*)"GARP Request", 12);
 }
 
 
 void CARPDlg::OnLvnItemchangedListControlProxy(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CARPDlg::OnIpnFieldchangedIpaddressSrc(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
 }

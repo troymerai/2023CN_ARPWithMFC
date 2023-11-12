@@ -16,8 +16,11 @@ private:
 public:
     // ARP 계층 패킷 수신 함수
     BOOL            Receive(unsigned char* ppayload);
-    // ARP 계층 패킷 전송 함수
-    BOOL            Send(unsigned char* ppayload, int nlength);
+    // ARP 계층 ARP 패킷 전송 함수
+    BOOL            SendARP(unsigned char* ppayload, int nlength);
+    // ARP 계층 GARP패킷 전송 함수
+    BOOL             SendGARP(unsigned char* ppayload, int nlength);
+
     // IP 주소가 ARP cache table에 있는 지 확인하는 함수
     int             inCache(const unsigned char* ipaddr);
     // ARP 헤더의 하드웨어 타입과 프로토콜 타입을 설정하는 함수
