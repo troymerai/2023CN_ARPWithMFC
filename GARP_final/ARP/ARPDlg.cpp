@@ -20,7 +20,6 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
-
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
@@ -55,7 +54,6 @@ END_MESSAGE_MAP()
 
 CARPDlg::CARPDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ARP_DIALOG, pParent)
-	// 참조할 계층 추가
 	, CBaseLayer("Dlg")
 	, m_ARPLayer(nullptr)
 	, m_EtherLayer(nullptr)
@@ -81,7 +79,6 @@ CARPDlg::CARPDlg(CWnd* pParent /*=nullptr*/)
 	m_LayerMgr.AddLayer(m_NILayer);
 	m_LayerMgr.AddLayer(this);
 
-	// 계층 정의
 	m_LayerMgr.ConnectLayers("NI ( *Ethernet ( *Network ( *Dlg  -ARP ) *ARP ) )");
 }
 
@@ -109,12 +106,7 @@ BEGIN_MESSAGE_MAP(CARPDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_ADAPTER, &CARPDlg::OnCbnSelchangeComboAdapter)
 	ON_BN_CLICKED(IDC_BUTTON_SELECT, &CARPDlg::OnBnClickedButtonSelect)
 	ON_BN_CLICKED(IDC_BUTTON_SEND_ARP, &CARPDlg::OnBnClickedButtonSendArp)
-	ON_NOTIFY(IPN_FIELDCHANGED, IDC_IPADDRESS_DST, &CARPDlg::OnIpnFieldchangedIpaddressDst)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL, &CARPDlg::OnLvnItemchangedListControl)
-	ON_EN_CHANGE(IDC_EDIT_HW_ADDR, &CARPDlg::OnEnChangeEditHwAddr)
 	ON_BN_CLICKED(IDC_BUTTON_G_ARP_SEND, &CARPDlg::OnBnClickedButtonGArpSend)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL_PROXY, &CARPDlg::OnLvnItemchangedListControlProxy)
-	ON_NOTIFY(IPN_FIELDCHANGED, IDC_IPADDRESS_SRC, &CARPDlg::OnIpnFieldchangedIpaddressSrc)
 END_MESSAGE_MAP()
 
 
@@ -325,8 +317,8 @@ void CARPDlg::updateTable()
 
 	for (int i = 0; i < table.size(); i++) {
 		CString dstip, dstmac;
-		addrToStr(ARP_IP_TYPE, dstip, table[i].prot_addr);
-		addrToStr(ARP_MAC_TYPE, dstmac, table[i].hard_addr);
+		addrToStr(ARP_IP_TYPE, dstip, table[i].protocol_addr);
+		addrToStr(ARP_ENET_TYPE, dstmac, table[i].hardware_addr);
 		LVFINDINFO l = { LVFI_STRING, dstip };
 		int fi = m_ListARPTable.FindItem(&l);
 		if (fi == -1) {
@@ -351,227 +343,100 @@ void CARPDlg::updateTable()
 	}
 }
 
-// 네트워크 어뎁터 선택 UI
 void CARPDlg::OnCbnSelchangeComboAdapter()
 {
-	// MAC 주소, IPv4, IPv6 주소를 저장할 CString 변수 선언
 	CString MAC, IPV4, IPV6;
-	// 현재 선택된 네트워크 어댑터의 MAC 주소 반환 함수(NI Layer 참조)
 	unsigned char* macaddr = m_NILayer->SetAdapter(m_ComboxAdapter.GetCurSel());
-	// MAC 주소를 반환받지 못한 경우
 	if (macaddr == nullptr) {
-		// MAC 주소에 기본 텍스트 설정
 		MAC = DEFAULT_EDIT_TEXT;
 	}
-	// MAC 주소를 반환 받은 경우
 	else {
-		// MAC 주소 설정
 		MAC.Format(_T("%hhx:%hhx:%hhx:%hhx:%hhx:%hhx"), macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
-		// 출발지 MAC 주소를 선택한 MAC 주소로 채움
 		m_EtherLayer->SetSourceAddress(macaddr);
-		// 선택한 어댑터의 IP주소를 가져옴
 		m_NILayer->GetIPAddress(IPV4, IPV6);
 	}
-	// MAC 주소를 UI에 표시
 	m_editSrcHwAddr.SetWindowTextW(MAC);
-	// IPv4 주소를 UI에 표시
 	m_SrcIPADDRESS.SetWindowTextW(IPV4);
 }
 
-// 네트워크 어댑터 정보 확정 버튼
+
 void CARPDlg::OnBnClickedButtonSelect()
 {
-	// MAC 주소와 IP 주소를 저장할 CString 변수 선언
 	CString MAC, IP;
-	// 현재 UI(app계층)에서 MAC 주소와 IP 주소를 가져옴
 	m_editSrcHwAddr.GetWindowTextW(MAC);
 	m_SrcIPADDRESS.GetWindowTextW(IP);
 	
-	// 네트워크 어댑터 선택 콤보 박스가 활성화되어 있는 경우
 	if (m_ComboxAdapter.IsWindowEnabled()) {
-
-		// MAC 주소와 IP 주소가 유효한 경우
 		if (MAC != DEFAULT_EDIT_TEXT && IP != "0.0.0.0") {
-
-			// 네트워크 어댑터 선택 콤보 박스와 IP 주소 입력 필드를 비활성화 
-			// 대상 IP 주소 입력 필드를 활성화
 			m_ComboxAdapter.EnableWindow(FALSE);
 			m_SrcIPADDRESS.EnableWindow(FALSE);
 			m_DstIPADDRESS.EnableWindow(TRUE);
-
-			// NI Layer에서 패킷 수신 상태 변경 (가능<-불가능)
 			m_NILayer->Receiveflip();
-			
-			// 자신의 MAC 주소와 IP 주소 설정
 			m_ARPLayer->setmyAddr(MAC, IP);
-
-			// 버튼의 텍스트를 ReSelect로 변경
 			CDialog::SetDlgItemTextW(IDC_BUTTON_SELECT, _T("ReSelect"));
-
-			// 1초마다 타이머 실행
 			SetTimer(1, 1000, NULL);
-
-			// 데이터 수신을 위한 스레드 실행
 			AfxBeginThread(m_NILayer->ThreadFunction_RECEIVE, m_NILayer);
 		}
-		// MAC 주소나 IP 주소가 유효하지 않은 경우
 		else {
-			// 다른 어댑터를 선택하라는 메시지 출력
 			AfxMessageBox(_T("Select other Adapter"));
 		}
 	}
-	// 네트워크 어댑터 선택 콤보 박스가 비활성화되어 있는 경우 
 	else {
-		// 대상 IP 주소 입력 필드를 비활성화 
 		m_DstIPADDRESS.EnableWindow(FALSE);
-		// IP 주소 입력 필드와 네트워크 어댑터 선택 콤보 박스를 활성화
 		m_SrcIPADDRESS.EnableWindow(TRUE);
 		m_ComboxAdapter.EnableWindow(TRUE);
-
-		// 버튼의 텍스트를 Select로 변경
 		CDialog::SetDlgItemTextW(IDC_BUTTON_SELECT, _T("Select"));
-
-		// 타이머 종료
 		KillTimer(1);
-
-		// NI Layer에서 패킷 수신 상태 변경 (가능->불가능)
 		m_NILayer->Receiveflip();
 	}
 }
 
-// ARP 요청 보내는 버튼
 void CARPDlg::OnBnClickedButtonSendArp()
 {
-	// 출발지 IP 주소와 목적지 IP 주소를 저장할 배열 선언
 	unsigned char srcip[IP_ADDR_SIZE] = {0,}, dstip[IP_ADDR_SIZE] = {0,};
-
-	// 현재 UI(app 계층)에서 소스 IP 주소와 목적지 IP 주소를 가져옴
 	m_SrcIPADDRESS.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
 	m_DstIPADDRESS.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
-	// 목적지 IP 주소 입력 필드가 활성화 
-	// 네트워크 어댑터 선택 콤보 박스가 비활성화면 (== 테스트 조건)
 	if (m_DstIPADDRESS.IsWindowEnabled() && !m_ComboxAdapter.IsWindowEnabled()) {
-		
-		// 출발지 IP 주소와 목적지 IP 주소 설정 
-		// IP Layer에 전달
 		m_IPLayer->SetSourceAddress(srcip);
 		m_IPLayer->SetDestinAddress(dstip);
-
-		// 소스 IP 주소와 목적지 IP 주소가 같다면 
-		if (memcmp(srcip, dstip, IP_ADDR_SIZE)==0) {
-
-			// 오류 메시지를 표시하고 함수 종료
-			AfxMessageBox(_T("Fail : Invalid Address"));
-			return;
-		}
-
-
-		// 목적지 IP 주소의 각 바이트를 합한 값이 0이거나 255 * 4이면 
+		//if (memcmp(srcip, dstip, IP_ADDR_SIZE)==0) {
+		//	AfxMessageBox(_T("Fail : Invalid Address"));
+		//	return;
+		//}
 		int check = 0;
 		for (int i = 0; i < IP_ADDR_SIZE; i++) {
 			check += dstip[i];
 		}
-
 		if (check == 0 || check == 255 * 4) {
-			
-			// 오류 메시지를 표시하고 함수를 종료
 			AfxMessageBox(_T("Fail : Invalid Address"));
 			return;
 		}
-
-		// 하위 레이어(여기서는 IP Layer)로 ARP 요청 전달
-		mp_UnderLayer->Send((unsigned char*)"ARP Request", 11);
+		mp_UnderLayer->Send((unsigned char*)"dummy Data", 11);
 	}
-	// 네트워크 어댑터가 설정되지 않았다면
 	else {
-		// 오류 메시지를 표시하고 함수 종료
 		AfxMessageBox(_T("Fail : Set Adapter first"));
 		return;
 	}
 }
 
 
-// 목적지 IP 주소 넣는 UI
-void CARPDlg::OnIpnFieldchangedIpaddressDst(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	// 초기값 0
-	*pResult = 0;
-}
 
-
-void CARPDlg::OnLvnItemchangedListControl(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
-}
-
-// GARP용 MAC 주소 넣는 곳
-void CARPDlg::OnEnChangeEditHwAddr()
-{
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// __super::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
-
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	//20231112 GARP modify
-	//CString strMacAddress; 지역 변수 대신 멤버 변수 사용
-	GetDlgItemText(IDC_EDIT_HW_ADDR, m_strMacAddress);
-}
-
-// GARP 요청 날리는 곳
 void CARPDlg::OnBnClickedButtonGArpSend()
 {
-
-
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	// 20231112 GARP modify
-	// MAC 주소를 바이트 배열로 변환
-	unsigned char mac[MAC_ADDR_SIZE];
-	sscanf_s(CW2A(m_strMacAddress.GetString()), "%02x:%02x:%02x:%02x:%02x:%02x", &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
-
-	//////////////////////////////////////////////////////////////////////////////
-	// ARP 시나리오를 먼저 진행하면 빼도 되나? 모르겠음
-	// 
-	// 출발지 IP 주소와 목적지 IP 주소를 저장할 배열 선언
-	unsigned char srcip[IP_ADDR_SIZE] = { 0, }, dstip[IP_ADDR_SIZE] = { 0, };
-
-	// 현재 UI(app 계층)에서 소스 IP 주소와 목적지 IP 주소를 가져옴
+	CString sgarpaddr;
+	unsigned char garpaddr[ENET_ADDR_SIZE] = { 0, };
+	unsigned char myaddr[ENET_ADDR_SIZE] = { 0, };
+	unsigned char srcip[IP_ADDR_SIZE] = { 0, };
 	m_SrcIPADDRESS.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
-	m_DstIPADDRESS.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
-	// 출발지 IP 주소와 목적지 IP 주소 설정 
-	// IP Layer에 전달
+	memcpy(myaddr, m_EtherLayer->GetDestinAddress(), ENET_ADDR_SIZE);
+	m_editHWAddr.GetWindowTextW(sgarpaddr);
+	StrToaddr(ARP_ENET_TYPE, garpaddr, sgarpaddr);
 	m_IPLayer->SetSourceAddress(srcip);
-	m_IPLayer->SetDestinAddress(dstip);
+	m_IPLayer->SetDestinAddress(srcip);
 
-	///////////////////////////////////////////////////////////////////////////////
-
-	// MAC 주소 설정
-	m_EtherLayer->SetSourceAddress(mac);
-
-	// GARP 요청 전달
-	mp_UnderLayer->Send((unsigned char*)"GARP Request", 12);
-}
-
-
-void CARPDlg::OnLvnItemchangedListControlProxy(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
-}
-
-
-void CARPDlg::OnIpnFieldchangedIpaddressSrc(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
+	m_EtherLayer->SetSourceAddress(garpaddr);
+	mp_UnderLayer->Send((unsigned char*)"dummy", 6);
+	m_EtherLayer->SetSourceAddress(myaddr);
 }
