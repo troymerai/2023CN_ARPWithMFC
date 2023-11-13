@@ -90,20 +90,31 @@ void CIPLayer::SetDestinAddress(unsigned char* pAddress){
 //UpperLayer = AppLayer, UnderLayer = ARPLayer?
 // 
 // IP 계층 패킷 전송 함수
-BOOL CIPLayer::Send(unsigned char* ppayload, int nlength){
-    
+BOOL CIPLayer::Send(unsigned char* ppayload, int nlength) {
+
     // argument로 받은 payload를 IP data field에 복사
     memcpy(m_sHeader.ip_data, ppayload, nlength);
-    
+
     // 패킷 전송 성공 여부 저장 변수 선언
     BOOL bSuccess = FALSE;
 
-    // 하위 레이어로 패킷 전송 && 결과는 bSuccess에 저장
-    bSuccess = this->GetUnderLayer()->Send((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
-    
+    if (strcmp((char*)ppayload, "ARP Request") == 0) {
+        // ARP 패킷 처리
+        bSuccess = m_ARPLayer->SendARP((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
+    }
+    else if (strcmp((char*)ppayload, "GARP Request") == 0) {
+        // GARP 패킷 처리
+        bSuccess = m_ARPLayer->SendGARP((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
+    }
+    else {
+        // 다른 패킷 처리
+        bSuccess = this->GetUnderLayer()->Send((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
+    }
+
     // 패킷 전송 성공 여부 반환
     return bSuccess;
 }
+
 
 // IP Layer 패킷 수신 함수
 BOOL CIPLayer::Receive(unsigned char* ppayload) {

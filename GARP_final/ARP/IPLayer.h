@@ -2,6 +2,9 @@
 #include "BaseLayer.h"
 #include "pch.h"
 
+class CARPLayer; // CARPLayer 클래스의 전방 선언
+
+
 class CIPLayer : public CBaseLayer{
 
 private:
@@ -23,8 +26,13 @@ public:
     // 출발지 IP 주소 반환 함수
     unsigned char*  GetSourceAddress();
 
+    CARPLayer* m_ARPLayer;
+
     CIPLayer(char* pName);
 	virtual ~CIPLayer();
+
+    // ARP Layer 참조
+
 
     // IP 헤더 구조체
     typedef struct _IP_HEADER {

@@ -13,6 +13,7 @@ class CARPDlg : public CDialogEx, public CBaseLayer
 // 생성입니다.
 public:
 	CARPDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	CString m_strMacAddress; // GARP용 MAC 주소 저장 멤버 변수
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -74,4 +75,5 @@ public:
 	afx_msg void OnEnChangeEditHwAddr();
 	afx_msg void OnBnClickedButtonGArpSend();
 	afx_msg void OnLvnItemchangedListControlProxy(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnIpnFieldchangedIpaddressSrc(NMHDR* pNMHDR, LRESULT* pResult);
 };
