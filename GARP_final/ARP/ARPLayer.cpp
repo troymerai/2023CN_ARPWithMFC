@@ -82,6 +82,13 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 			m_arpTable.push_back(ARP_NODE(arp_data->protocol_srcaddr, arp_data->hardware_srcaddr, TRUE));
 		}
 
+		// 20231114 GARP 자신에게 오는 reply를 방지하기 위한 코드 추가
+		// 
+		// 패킷의 목적지 IP주소와 송신지 IP 주소가 같은 경우 GARP니까 탈출
+		if (memcmp(arp_data->protocol_dstaddr, arp_data->protocol_srcaddr, IP_ADDR_SIZE) == 0) {
+			break;
+		}
+
 		// 패킷의 목적지 IP 주소가 자신의 IP 주소와 같은 경우
 		if (memcmp(arp_data->protocol_dstaddr, myip, IP_ADDR_SIZE) == 0) {
 			// 자신의 MAC 주소를 패킷의 목적지 하드웨어 주소로 설정
