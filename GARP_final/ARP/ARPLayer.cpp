@@ -69,26 +69,42 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 
 	// ARP 요청인 경우
 	case ARP_OPCODE_REQUEST:
-		// 캐시에 이미 주소가 있는 경우 (GARP)
+		// 캐시에 이미 물리 주소가 있는 경우 (GARP)
 		if (index >= 0) {
+			// 자기가 보낸 GARP에 대해서는 reply를 안쓰게 예외 처리
+			if (memcmp(arp_data->protocol_srcaddr, myip, IP_ADDR_SIZE) == 0) {
+				// IP 충돌이 발생한 경우 GARP reply 패킷 작성
+				if (memcmp(arp_data->protocol_dstaddr, myip, IP_ADDR_SIZE) == 0) {
+					// 자신의 MAC 주소를 패킷의 목적지 하드웨어 주소로 설정
+					memcpy(arp_data->hardware_dstaddr, mymac, ENET_ADDR_SIZE);
+					// 패킷의 작업 코드를 ARP 응답으로 변경
+					arp_data->opercode = ARP_OPCODE_REPLY;
+					// 패킷의 소스 주소와 목적지 주소를 교환
+					swapaddr(arp_data->hardware_srcaddr, arp_data->hardware_dstaddr, ENET_ADDR_SIZE);
+					swapaddr(arp_data->protocol_srcaddr, arp_data->protocol_dstaddr, IP_ADDR_SIZE);
+
+					// 이더넷 계층의 목적지 주소를 패킷의 목적지 하드웨어 주소로 설정
+					m_ether->SetDestinAddress(arp_data->hardware_dstaddr);
+					// 패킷을 하위 계층(이더넷 계층)으로 전송
+					mp_UnderLayer->Send((unsigned char*)arp_data, ARP_HEADER_SIZE);
+				}
+				break;
+			}
+
 			// 캐시의 해당 항목을 갱신
 			memcpy(m_arpTable[index].hardware_addr, arp_data->hardware_srcaddr, ENET_ADDR_SIZE);
 			m_arpTable[index].status = true;
 			m_arpTable[index].spanTime = CTime::GetCurrentTime();
+
+			break;
 		}
 		// 캐시에 주소가 없는 경우
 		else {
 			// 새 항목을 캐시에 추가
 			m_arpTable.push_back(ARP_NODE(arp_data->protocol_srcaddr, arp_data->hardware_srcaddr, TRUE));
 		}
-
-		// 20231114 GARP 자신에게 오는 reply를 방지하기 위한 코드 추가
-		// 
-		// 패킷의 목적지 IP주소와 송신지 IP 주소가 같은 경우 GARP니까 탈출
-		if (memcmp(arp_data->protocol_dstaddr, arp_data->protocol_srcaddr, IP_ADDR_SIZE) == 0) {
-			break;
-		}
-
+		
+		// ARP의 경우
 		// 패킷의 목적지 IP 주소가 자신의 IP 주소와 같은 경우
 		if (memcmp(arp_data->protocol_dstaddr, myip, IP_ADDR_SIZE) == 0) {
 			// 자신의 MAC 주소를 패킷의 목적지 하드웨어 주소로 설정
@@ -107,6 +123,15 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 		break;
 	// ARP 응답인 경우
 	case ARP_OPCODE_REPLY:
+
+		// GARP인 경우
+		if (memcmp(arp_data->protocol_dstaddr, arp_data->protocol_srcaddr, IP_ADDR_SIZE) == 0) {
+			// Dlg에 사용자 메시지 보내는 코드 추가
+			break;
+		}
+
+
+		// ARP인 경우
 		// 캐시를 순회하며 패킷의 소스 프로토콜 주소와 같은 항목을 찾음
 		for (auto& node : m_arpTable) {
 			if (node == arp_data->protocol_srcaddr) {
