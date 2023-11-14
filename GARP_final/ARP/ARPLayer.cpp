@@ -127,6 +127,7 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 		// GARP인 경우
 		if (memcmp(arp_data->protocol_dstaddr, arp_data->protocol_srcaddr, IP_ADDR_SIZE) == 0) {
 			// Dlg에 사용자 메시지 보내는 코드 추가
+			AfxMessageBox(_T("IP conflict detected!"));
 			break;
 		}
 
