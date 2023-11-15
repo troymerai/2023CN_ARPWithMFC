@@ -69,10 +69,16 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 
 	// ARP 요청인 경우
 	case ARP_OPCODE_REQUEST:
-		// 캐시에 이미 물리 주소가 있는 경우 (GARP)
+
+		// 자신이 보낸 GARP에 대해서는 아무 일도 일어나지 않게 예외 처리
+		if (memcmp(arp_data->hardware_srcaddr, mymac, ENET_ADDR_SIZE) == 0) {
+			break;
+		}
+
+		// 캐시에 이미 주소가 있는 경우 (GARP)
 		if (index >= 0) {
 			// 자기가 보낸 GARP에 대해서는 reply를 안쓰게 예외 처리
-			if (memcmp(arp_data->protocol_srcaddr, myip, IP_ADDR_SIZE) == 0) {
+			//if (memcmp(arp_data->protocol_srcaddr, myip, IP_ADDR_SIZE) != 0) {
 				// IP 충돌이 발생한 경우 GARP reply 패킷 작성
 				if (memcmp(arp_data->protocol_dstaddr, myip, IP_ADDR_SIZE) == 0) {
 					// 자신의 MAC 주소를 패킷의 목적지 하드웨어 주소로 설정
@@ -89,7 +95,7 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 					mp_UnderLayer->Send((unsigned char*)arp_data, ARP_HEADER_SIZE);
 				}
 				break;
-			}
+			//}
 
 			// 캐시의 해당 항목을 갱신
 			memcpy(m_arpTable[index].hardware_addr, arp_data->hardware_srcaddr, ENET_ADDR_SIZE);
