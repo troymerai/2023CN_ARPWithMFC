@@ -71,9 +71,10 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 	case ARP_OPCODE_REQUEST:
 
 		// 자신이 보낸 GARP에 대해서는 아무 일도 일어나지 않게 예외 처리
-		if (memcmp(arp_data->hardware_srcaddr, mymac, ENET_ADDR_SIZE) == 0) {
-			break;
-		}
+		// 작동 안함
+		//if (memcmp(arp_data->hardware_srcaddr, mymac, ENET_ADDR_SIZE) == 0) {
+		//	break;
+		//}
 
 		// 캐시에 이미 주소가 있는 경우 (GARP)
 		if (index >= 0) {
