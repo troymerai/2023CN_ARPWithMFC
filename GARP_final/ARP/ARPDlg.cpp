@@ -109,6 +109,7 @@ BEGIN_MESSAGE_MAP(CARPDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SELECT, &CARPDlg::OnBnClickedButtonSelect)
 	ON_BN_CLICKED(IDC_BUTTON_SEND_ARP, &CARPDlg::OnBnClickedButtonSendArp)
 	ON_BN_CLICKED(IDC_BUTTON_G_ARP_SEND, &CARPDlg::OnBnClickedButtonGArpSend)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CONTROL, &CARPDlg::OnLvnItemchangedListControl)
 END_MESSAGE_MAP()
 
 
@@ -378,9 +379,16 @@ void CARPDlg::OnBnClickedButtonSelect()
 {
 	// MAC 주소와 IP 주소를 저장할 CString 변수 선언
 	CString MAC, IP;
+
+	//
+	unsigned char srcip[IP_ADDR_SIZE] = { 0, };
+
+
 	// 현재 UI(app계층)에서 MAC 주소와 IP 주소를 가져옴
 	m_editSrcHwAddr.GetWindowTextW(MAC);
 	m_SrcIPADDRESS.GetWindowTextW(IP);
+	m_SrcIPADDRESS.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
+
 	
 	// 네트워크 어댑터 선택 콤보 박스가 활성화되어 있는 경우
 	if (m_ComboxAdapter.IsWindowEnabled()) {
@@ -399,6 +407,9 @@ void CARPDlg::OnBnClickedButtonSelect()
 
 			// 자신의 MAC 주소와 IP 주소 설정
 			m_ARPLayer->setmyAddr(MAC, IP);
+
+			m_IPLayer->SetSourceAddress(srcip);
+			m_IPLayer->SetDestinAddress(srcip);
 
 			// 버튼의 텍스트를 ReSelect로 변경
 			CDialog::SetDlgItemTextW(IDC_BUTTON_SELECT, _T("ReSelect"));
@@ -496,10 +507,10 @@ void CARPDlg::OnBnClickedButtonGArpSend()
 	// 자신의 MAC 주소를 저장할 배열 선언, 초기화
 	unsigned char myaddr[ENET_ADDR_SIZE] = { 0, };
 	// 자신의 IP 주소를 저장할 배열 선언, 초기화
-	unsigned char srcip[IP_ADDR_SIZE] = { 0, };
+	unsigned char dstip[IP_ADDR_SIZE] = { 0, };
 
 	// 사용자가 입력한 IP 주소를 가져와 srcip에 저장
-	m_SrcIPADDRESS.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
+	m_SrcIPADDRESS.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
 	// 현재 이더넷 계층의 목적지 MAC 주소를 myaddr에 복사
 	memcpy(myaddr, m_EtherLayer->GetDestinAddress(), ENET_ADDR_SIZE);
@@ -508,14 +519,24 @@ void CARPDlg::OnBnClickedButtonGArpSend()
 	// sgarpaddr의 문자열 형태의 주소를 garpaddr의 이진 형태로 변환
 	StrToaddr(ARP_ENET_TYPE, garpaddr, sgarpaddr);
 	// IP 계층의 소스 주소를 사용자가 입력한 IP 주소(srcip)로 설정
-	m_IPLayer->SetSourceAddress(srcip);
+	//m_IPLayer->SetSourceAddress(srcip);
 	// IP 계층의 목적지 주소도 사용자가 입력한 IP 주소(srcip)로 설정
-	m_IPLayer->SetDestinAddress(srcip);
+	//m_IPLayer->SetDestinAddress(srcip);
 
 	// 이더넷 계층의 소스 주소를 GARP 패킷의 주소(garpaddr)로 설정
 	m_EtherLayer->SetSourceAddress(garpaddr);
 	// IP 계층으로 GARP 요청 전송
 	mp_UnderLayer->Send((unsigned char*)"dummy", 6);
 	// 이더넷 계층의 소스 주소를 원래의 주소(myaddr)로 다시 설정
-	m_EtherLayer->SetSourceAddress(myaddr);
+	//m_EtherLayer->SetSourceAddress(myaddr);
+
+
+}
+
+
+void CARPDlg::OnLvnItemchangedListControl(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
 }
