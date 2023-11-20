@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ARPLayer.h"
 
+BOOL isDetected = FALSE;
+
 // IP 주소와 MAC 주소를 받아서 ARP 노드를 생성 
 CARPLayer::_ARP_NODE::_ARP_NODE(unsigned char* cipaddr, unsigned char* cenetaddr, unsigned char bincomplete = false) {
 	// IP(프로토콜)주소 저장
@@ -132,8 +134,15 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
 
 		// GARP인 경우
 		if (memcmp(arp_data->protocol_dstaddr, arp_data->protocol_srcaddr, IP_ADDR_SIZE) == 0) {
-			// Dlg에 사용자 메시지 보내는 코드 추가
-			AfxMessageBox(_T("IP conflict detected!"));
+			
+			if (isDetected == FALSE) {
+				// Dlg에 사용자 메시지 보내는 코드 추가
+				AfxMessageBox(_T("IP conflict detected!"));
+
+				// GARP 요청 한 번에 여러번 보내도 ip detected는 한 번만 나타나도록 수정
+				isDetected = TRUE;
+			}
+
 			break;
 		}
 
