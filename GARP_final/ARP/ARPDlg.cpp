@@ -525,12 +525,14 @@ void CARPDlg::OnBnClickedButtonGArpSend()
 
 	// 이더넷 계층의 소스 주소를 GARP 패킷의 주소(garpaddr)로 설정
 	m_EtherLayer->SetSourceAddress(garpaddr);
+
+	// 20231121 modify - send 요청을 여러번 눌러야 GARP 실행됨! 따라서 반복문으로 처리하기로 함
 	// IP 계층으로 GARP 요청 전송
-	mp_UnderLayer->Send((unsigned char*)"dummy", 6);
+	for (int i = 0; i < 5; i++) {
+		mp_UnderLayer->Send((unsigned char*)"dummy", 6);
+	}
 	// 이더넷 계층의 소스 주소를 원래의 주소(myaddr)로 다시 설정
 	//m_EtherLayer->SetSourceAddress(myaddr);
-
-
 }
 
 
