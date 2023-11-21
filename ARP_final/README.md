@@ -43,7 +43,7 @@
 15. ARP 레이어에서 ARP cache table을 업데이트한다.
 16. 업데이트한 ARP cache table을 APP 계층에서 확인하고 UI를 업데이트한다.
 
-## 실습 시나리오 시퀀스 다이어그램
+#  시퀀스 다이어그램
 ```mermaid
 sequenceDiagram
     participant PC1 as 출발지 호스트
@@ -59,6 +59,112 @@ sequenceDiagram
     PC1->>PC1: ARP Cache Table 업데이트
     PC1->>PC1: UI 업데이트
 ```
+
+## 출발지 - ARP Request
+```mermaid
+sequenceDiagram
+	autonumber
+	actor A as HostA
+	participant C as Application Layer
+	participant D as IP Layer
+	participant E as ARP Layer
+	participant F as Ethernet Layer
+	participant G as NI Layer
+	participant H as network
+
+	A->>C: NIC 선택 및 개방, HostB IP 주소 입력
+	Note over A,C: UCHAR* CNILayer::SetAdapter()
+	A->>C: ARP send 버튼 클릭
+	Note over A,C: void CARPDlg::OnBnClickedButtonSendArp()
+	C->>D: IP data 전송 
+	Note over C,D: BOOL CIPLayer::Send()
+	D->>D: IP data 저장
+	D->>E: IP data 전송
+	Note over D,E: BOOL CARPLayer::Send()
+	alt is IP가 ARP cache table에 존재
+		alt is 상태가 TRUE
+			E->>C: 사용자에게 알림
+		else 상태가 FALSE
+			E->>E: ARP cache table 업데이트
+		end
+	else is IP가 ARP cache table에 없는 경우
+		E->>E: ARP cache table 업데이트
+	end
+	E->>E: ARP Request ARP frame 작성
+	E->>F: ARP Request ARP frame 전송
+	Note over E,F: BOOL CARPLayer::Send()
+	F->>F: ARP Request 이더넷 frame 작성
+	F->>G: ARP Request 패킷 전송
+	Note over F,G: BOOL CEthernetLayer::Send()
+	G->>H: ARP Request 패킷을 네트워크로 전송
+	Note over G,H: BOOL CNILayer::Send
+```
+
+## 목적지 - ARP Request
+```mermaid
+sequenceDiagram
+	autonumber
+	participant M as network
+ 	participant H as NI Layer
+	participant I as Ethernet Layer
+	participant J as ARP Layer
+	participant K as IP Layer
+	participant L as Application Layer
+	actor B as HostB	
+
+	B->>L: NIC 선택 및 개방, HostA IP 주소 입력
+	Note over B,L: UCHAR* CNILayer::SetAdapter()
+	M->>H: ARP Request 패킷 전송
+	Note over M,H: UINT CNILayer::ThreadFunction_RECEIVE()
+	H->>I: ARP Request 패킷 전송
+	Note over H,I: BOOL CNILayer::Receive()
+	alt is 이더넷 헤더의 목적지 MAC이 broadcast
+		I->>K: ARP 프레임만 전송
+		Note over I,K: (request인 경우)BOOL CIPLayer::Receive()
+		alt is 프레임의 목적지 IP가 내 IP와 같은 경우
+			K->>J: ARP 프레임만 전송
+			Note over K,J: BOOL CARPLayer::Receive()
+			alt is ARP request
+				J->>J: ARP reply ARP 프레임 작성
+				J->>I: ARP reply ARP 프레임 전송
+			else ARP reply
+				Note over J,I: 출발지에서 사용됨
+			end
+		else 프레임의 목적지 IP가 내 IP와 다른 경우
+			Note over K,J: discard
+		end
+	else 이더넷 헤더의 목적지 MAC이 내 MAC
+		Note over I,J: (reply인 경우) 출발지에서 사용됨
+	end
+	I->>H: ARP reply 패킷 전송
+	H->>M: ARP reply 패킷을 네트워크로 전송
+```
+## 출발지 - ARP Reply
+```mermaid
+sequenceDiagram
+	autonumber
+	actor A as HostA
+	participant C as Application Layer
+	participant D as IP Layer
+	participant E as ARP Layer
+	participant F as Ethernet Layer
+	participant G as NI Layer
+	participant H as network
+
+	H->>G: ARP reply 패킷 전송
+	G->>F: ARP reply 패킷 전송
+	alt 목적지 MAC이 내 MAC과 같다면
+		F->>E: ARP reply ARP프레임만 전송
+	else 목적지 MAC이 내 MAC과 다르다면
+		Note over F,E: dicard
+	end
+	E->>E: ARP cache table 업데이트
+	C->>E: ARP cache table 업데이트 확인
+	Note over C,E: CARPDlg::OnTimer
+	C->>C: ARP cache table UI 업데이트
+	A->>C: ARP cache table 확인
+```
+
 
 # 프로토콜 스택
 
