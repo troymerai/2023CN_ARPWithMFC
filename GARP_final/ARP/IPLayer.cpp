@@ -4,10 +4,8 @@
 #include "IPLayer.h"
 
 
-
 // 생성자
 CIPLayer::CIPLayer(char* pName) : CBaseLayer(pName){
-    
     // 헤더 정보 초기화
     ResetHeader();
 
@@ -85,12 +83,10 @@ void CIPLayer::SetSourceAddress(unsigned char* pAddress){
 void CIPLayer::SetDestinAddress(unsigned char* pAddress){
     memcpy(m_sHeader.ip_dstaddr, pAddress, IP_ADDR_SIZE);
 }
-
-
-//UpperLayer = AppLayer, UnderLayer = ARPLayer?
+//UpperLayer = Application Layer, UnderLayer = ARP Layer
 // 
 // IP 계층 패킷 전송 함수
-BOOL CIPLayer::Send(unsigned char* ppayload, int nlength) {
+BOOL CIPLayer::Send(unsigned char* ppayload, int nlength){
 
     // argument로 받은 payload를 IP data field에 복사
     memcpy(m_sHeader.ip_data, ppayload, nlength);
@@ -98,37 +94,26 @@ BOOL CIPLayer::Send(unsigned char* ppayload, int nlength) {
     // 패킷 전송 성공 여부 저장 변수 선언
     BOOL bSuccess = FALSE;
 
-    if (strcmp((char*)ppayload, "ARP Request") == 0) {
-        // ARP 패킷 처리
-        bSuccess = m_ARPLayer->SendARP((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
-    }
-    else if (strcmp((char*)ppayload, "GARP Request") == 0) {
-        // GARP 패킷 처리
-        bSuccess = m_ARPLayer->SendGARP((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
-    }
-    else {
-        // 다른 패킷 처리
-        bSuccess = this->GetUnderLayer()->Send((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
-    }
-
+    // 하위 레이어로 패킷 전송 && 결과는 bSuccess에 저장
+    bSuccess = this->GetUnderLayer()->Send((unsigned char*)&m_sHeader, IP_HEADER_SIZE + nlength);
+    
     // 패킷 전송 성공 여부 반환
     return bSuccess;
 }
 
+// IP 계층 패킷 수신 함수
+BOOL CIPLayer::Receive(unsigned char* ppayload){
 
-// IP Layer 패킷 수신 함수
-BOOL CIPLayer::Receive(unsigned char* ppayload) {
-
-    // 패킷 수신 성공 여부
+    // 패킷 수신 여부 저장 변수 선언
     BOOL bSuccess = FALSE;
 
-    // argument로 받은 payload를 IP 헤더 구조체로 형변환
+    // argument로 받은 payload를 IP헤더 구조체로 타입 캐스팅
     PIP_HEADER pFrame = (PIP_HEADER)ppayload;
 
-    // 목적지 IP 주소가 자신의 IP 주소와 같다면
-    if (memcmp(pFrame->ip_dstaddr, m_sHeader.ip_srcaddr, sizeof(m_sHeader.ip_srcaddr)) == 0) {
-
-        // 상위 레이어로 데이터 전달
+    // 수신한 패킷의 목적지 IP 주소와 현재 레이어의 출발지 IP 주소가 같다면
+    if(memcmp(pFrame->ip_dstaddr, m_sHeader.ip_srcaddr, sizeof(m_sHeader.ip_srcaddr)) == 0){
+        
+        // 상위 레이어로 패킷의 데이터를 전달 && 결과를 bSuccess에 저장
         bSuccess = mp_aUpperLayer[0]->Receive(pFrame->ip_data);
     }
 

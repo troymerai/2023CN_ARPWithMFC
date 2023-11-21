@@ -10,6 +10,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
+
 // 생성자
 CNILayer::CNILayer(char* pName)
 	: CBaseLayer(pName), device(NULL) {
@@ -18,7 +19,7 @@ CNILayer::CNILayer(char* pName)
 	canRead = false;
 	adapter = nullptr;
 	OidData = nullptr;
-	memset(data, 0, MAC_MAX_SIZE);
+	memset(data, 0, ETHER_MAX_SIZE);
 	try {
 		// 모든 네트워크 장치를 검색
 		if (pcap_findalldevs(&allDevices, errbuf) == -1)
@@ -47,7 +48,7 @@ CNILayer::CNILayer(char* pName)
 		OidData->Oid = 0x01010101;
 		OidData->Length = 6;
 		m_AdapterObject = nullptr;
-		memset(data, 0, MAC_MAX_SIZE);
+		memset(data, 0, ETHER_MAX_SIZE);
 	}
 	// 에러 발생 시
 	catch (CString errorInfo) {
@@ -61,14 +62,11 @@ CNILayer::CNILayer(char* pName)
 CNILayer::~CNILayer() {
 	pcap_if_t* temp = nullptr;
 
-	// allDevices에 할당한 메모리를 해제
 	while (allDevices) {
 		temp = allDevices;
 		allDevices = allDevices->next;
 		delete(temp);
 	}
-
-	// OidData에 할당한 메모리를 해제
 	delete(OidData);
 }
 
@@ -100,7 +98,7 @@ BOOL CNILayer::Send(unsigned char* ppayload, int nlength) {
 		// FALSE 반환
 		return FALSE;
 	}
-	
+
 	// 전송 성공 시 TRUE 반환
 	return TRUE;
 }
@@ -149,13 +147,12 @@ UCHAR* CNILayer::SetAdapter(const int index) {
 	return (OidData->Data);
 }
 
-// 네트워크 장치의 MAC 주소 목록을 가져오는 함수
+
 void CNILayer::GetMacAddressList(CStringArray& adapterlist) {
 	for (pcap_if_t* d = allDevices; d; d = d->next) {
 		adapterlist.Add(CString(d->description));
 	}
 }
-
 
 // 검색
 // 선택한 네트워크 어댑터의 IP 주소를 가져오는 함수
@@ -195,6 +192,7 @@ void CNILayer::GetIPAddress(CString& ipv4addr, CString& ipv6addr) {
 	}
 }
 
+
 // 패킷 수신하는 스레드 함수
 UINT CNILayer::ThreadFunction_RECEIVE(LPVOID pParam) {
 	struct pcap_pkthdr* header;
@@ -207,7 +205,7 @@ UINT CNILayer::ThreadFunction_RECEIVE(LPVOID pParam) {
 	{
 		result = pcap_next_ex(pNI->m_AdapterObject, &header, &pkt_data);
 		if (result == 1) {
-			memcpy(pNI->data, pkt_data, MAC_MAX_SIZE);
+			memcpy(pNI->data, pkt_data, ETHER_MAX_SIZE);
 			pNI->Receive(pNI->data);
 		}
 	}
