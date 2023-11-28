@@ -210,17 +210,19 @@ HCURSOR CARPDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+//ARP테이블과 Static Routing 테이블을 설정하는 함수
 void CARPDlg::SetTable()
 {
 	CRect rt;
 	m_ListARPTable.GetWindowRect(&rt);
 
+	// ARP table 설정
 	m_ListARPTable.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	m_ListARPTable.InsertColumn(1, _T("IP Address"), LVCFMT_CENTER, int(rt.Width() * 0.35));
 	m_ListARPTable.InsertColumn(2, _T("MAC Address"), LVCFMT_CENTER, int(rt.Width() * 0.4));
 	m_ListARPTable.InsertColumn(3, _T("Status"), LVCFMT_CENTER, int(rt.Width() * 0.25));
 
-	//Static Routing Table
+	//Static Routing Table 설정
 	m_ListStaticRoutingTable.GetWindowRect(&rt);
 	m_ListStaticRoutingTable.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	m_ListStaticRoutingTable.InsertColumn(1, _T("Destination"), LVCFMT_CENTER, int(rt.Width() * 0.2));
@@ -231,12 +233,14 @@ void CARPDlg::SetTable()
 	m_ListStaticRoutingTable.InsertColumn(6, _T("Metric"), LVCFMT_CENTER, int(rt.Width() * 0.1));
 }
 
+// 네트워크 인터페이스 선택 박스
 void CARPDlg::SetComboBox()
 {
 	m_NILayer->SetAdapterComboBox(m_ComboxAdapter);
 	m_NILayer->SetAdapterComboBox(m_ComboxAdapter2);
 }
 
+// 대화 상자 위치 설정
 void CARPDlg::SetPosition(CDialogEx& dlg, int IDD_dlg)
 {
 	CRect Mainrect;
@@ -252,11 +256,15 @@ void CARPDlg::SetPosition(CDialogEx& dlg, int IDD_dlg)
 	dlg.SetWindowPos(NULL, pos.x + (Rect.Width() / 2), pos.y + (Rect.Height() / 2), 0, 0, SWP_NOSIZE);
 }
 
+
 bool CARPDlg::bgetMACaddrInARP(unsigned char* IP, unsigned char* MAC)
 {
+	// ARP table에 해당 주소값이 있으면 TRUE 반환
 	return m_ARPLayer->getMACinARP(IP, MAC);
 }
 
+// 프로그램 초기화 함수
+// Proxy ARP cache 초기화
 void CARPDlg::InitFn()
 {
 	//--------------------------------------------------------------------------------------
@@ -283,23 +291,25 @@ void CARPDlg::InitFn()
 	SetPosition(mRoutingTabledlg, IDD_DIALOG_ROUTING_TABLE);
 }
 
+// Proxy ARP cache에 항목 추가
+// 새 장치 추가 대화 상자 표시
 void CARPDlg::AddProxyArpCache(const int _index, unsigned char* ip, unsigned char* addr)
 {
 	int nListIndex = m_ctrlListControlProxy.GetItemCount();
 	UCHAR mac[ENET_ADDR_SIZE] = { 0, };
 	CString deviceName, IP, ADDR;
 
-	//선택된 어뎁터 이름을 불러옵니다.
+	// 선택된 어뎁터 이름을 불러옴
 	m_ComboxAdapter.GetLBText(_index, deviceName);
-	//선택된 어뎁터의 맥 주소를 불러옵니다.
+	// 선택된 어뎁터의 맥 주소를 불러옴
 	m_NILayer->GetMacAddress(_index, mac, OUTER);
-	//UCHAR에서 STRING으로 IP 및 ETERNET 주소를 변환합니다.
+	// UCHAR에서 STRING으로 IP 및 ETERNET 주소를 변환
 	addrToStr(ARP_IP_TYPE, IP, ip);
 	addrToStr(ARP_ENET_TYPE, ADDR, addr);
 
-	//ARPLayer 계층의 Proxy Table에 등록합니다.
+	// ARPLayer 계층의 Proxy Table에 등록
 
-	//Dlg Layer의 Proxy Table에 등록합니다.
+	// Dlg Layer의 Proxy Table에 등록
 	m_ctrlListControlProxy.InsertItem(nListIndex, deviceName);
 	m_ctrlListControlProxy.SetItemText(nListIndex, 1, IP);
 	m_ctrlListControlProxy.SetItemText(nListIndex, 2, ADDR);
@@ -308,6 +318,7 @@ void CARPDlg::AddProxyArpCache(const int _index, unsigned char* ip, unsigned cha
 
 void CARPDlg::OnBnClickedButtonAdd()
 {
+	// "Add" 버튼이 클릭되었을 때 호출되며, 새 장치 추가 대화 상자를 표시
 	mDeviceAddDlg.InitDeviceAddDlg(m_ComboxAdapter.GetCurSel());
 	mDeviceAddDlg.ShowWindow(SW_SHOW);
 }
@@ -315,6 +326,7 @@ void CARPDlg::OnBnClickedButtonAdd()
 
 void CARPDlg::OnBnClickedButtonDelete()
 {
+	// "Delete" 버튼이 클릭되었을 때 호출되며, 선택된 Proxy ARP 캐시 항목을 삭제
 	POSITION pos = m_ctrlListControlProxy.GetFirstSelectedItemPosition();
 	int nItem = m_ctrlListControlProxy.GetNextSelectedItem(pos);
 	m_ARPLayer->deleteProxy(nItem);
@@ -324,6 +336,8 @@ void CARPDlg::OnBnClickedButtonDelete()
 
 void CARPDlg::OnBnClickedButtonItemDel()
 {
+	// "Item Delete" 버튼이 클릭되었을 때 호출되며, 선택된 ARP 테이블 항목을 삭제
+
 	int sindex = m_ListARPTable.GetSelectionMark();
 
 	if (sindex < 0) {
@@ -339,11 +353,13 @@ void CARPDlg::OnBnClickedButtonItemDel()
 
 void CARPDlg::OnBnClickedButtonAllDel()
 {
+	// "All Delete" 버튼이 클릭되었을 때 호출되며, 모든 ARP 테이블 항목을 삭제
+
 	m_ARPLayer->clearTable();
 	m_ListARPTable.DeleteAllItems();
 }
 
-
+// 1초마다 arp cache table 업데이트
 void CARPDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	switch (nIDEvent) {
@@ -356,8 +372,10 @@ void CARPDlg::OnTimer(UINT_PTR nIDEvent)
 	__super::OnTimer(nIDEvent);
 }
 
+// arp cache table 업데이트 함수
 void CARPDlg::updateTable()
 {
+	// ARP 계층 참조
 	m_ARPLayer->updateTable();
 	std::vector<CARPLayer::ARP_NODE> table = m_ARPLayer->getTable();
 	CTime cur = CTime::GetCurrentTime();
@@ -390,26 +408,39 @@ void CARPDlg::updateTable()
 	}
 }
 
+// 내부 네트워크 어뎁터 선택 함수
 void CARPDlg::OnCbnSelchangeComboAdapter()
 {
+	// MAC 주소, IPv4, IPv6 주소를 저장할 CString 변수 선언
 	CString MAC, IPV4, IPV6;
+	// 현재 선택된 네트워크 어댑터의 MAC 주소 반환 함수(NI Layer 참조)
 	unsigned char* macaddr = m_NILayer->SetAdapter(m_ComboxAdapter.GetCurSel(), OUTER);
+	// MAC 주소를 반환받지 못한 경우
 	if (macaddr == nullptr) {
+		// MAC 주소에 기본 텍스트 설정
 		MAC = DEFAULT_EDIT_TEXT;
 	}
+	// MAC 주소를 반환 받은 경우
 	else {
+		// MAC 주소 설정
 		MAC.Format(_T("%hhx:%hhx:%hhx:%hhx:%hhx:%hhx"), macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+		// 출발지 MAC 주소를 선택한 MAC 주소로 채움
 		m_EtherLayer->SetSourceAddress(macaddr, OUTER);
+		// 선택한 어댑터의 IP주소를 가져옴
 		m_NILayer->GetIPAddress(IPV4, IPV6, OUTER, TRUE);
 	}
+	// MAC 주소를 UI에 표시
 	m_editSrcHwAddr.SetWindowTextW(MAC);
+	// IPv4 주소를 UI에 표시
 	m_SrcIPADDRESS.SetWindowTextW(IPV4);
 }
 
 
 void CARPDlg::GetADDRINFO(CString& MAC, CString& IP, unsigned char* srcip, CEdit &hw, CIPAddressCtrl &ip)
 {
+	// MAC 주소를 가져옴
 	hw.GetWindowTextW(MAC);
+	// IP 주소를 가져옴
 	ip.GetWindowTextW(IP);
 	ip.GetAddress(srcip[0], srcip[1], srcip[2], srcip[3]);
 }
@@ -422,33 +453,59 @@ void CARPDlg::SetVisible(CComboBox& adapt, CIPAddressCtrl& srcip, bool isON)
 
 void CARPDlg::SetADDR(CString& MAC, CString& IP, unsigned char* srcip, int iosel)
 {
+	// ARP 계층의 MAC 주소와 IP 주소 설정
 	m_ARPLayer->setmyAddr(MAC, IP, iosel);
+	// IP 계층의 출발지 주소 설정
 	m_IPLayer->SetSourceAddress(srcip, iosel);
+	// IP 계층의 목적지 주소 설정
 	m_IPLayer->SetDestinAddress(srcip, iosel);
 }
 
+// 네트워크 어댑터 정보 확정 버튼
 void CARPDlg::OnBnClickedButtonSelect()
 {
+	// MAC과 IP 주소를 저장할 변수
 	CString MAC[2], IP[2];
+
+	// 출발지 IP 주소를 저장할 변수
 	unsigned char srcip[2][IP_ADDR_SIZE] = { 0, };
 	
+	// 네트워크 어댑터 선택 콤보 박스가 활성화되어 있는 경우 실행
 	if (m_ComboxAdapter.IsWindowEnabled()) {
+		// 내부 네트워크 정보를 가져옴
 		GetADDRINFO(MAC[INNER], IP[INNER], srcip[INNER], m_editSrcHwAddr2, m_SrcIPADDRESS2);
+		// 외부 네트워크 정보를 가져옴
 		GetADDRINFO(MAC[OUTER], IP[OUTER], srcip[OUTER], m_editSrcHwAddr, m_SrcIPADDRESS);
+		// 내부 네트워크 어댑터 선택 변화를 처리하는 함수 호출
 		OnCbnSelchangeComboAdapter();
+		// 외부 네트워크 어댑터 선택 변화를 처리하는 함수 호출
 		OnCbnSelchangeComboAdapter2();
 
+		// 외부 네트워크 정보가 잘설정되어 있는 경우 실행
 		if (MAC[OUTER] != DEFAULT_EDIT_TEXT && IP[OUTER] != "0.0.0.0") {
+			// 내부 네트워크 어댑터 선택 콤보 박스와 IP 주소 입력 컨트롤을 비활성화
 			SetVisible(m_ComboxAdapter, m_SrcIPADDRESS, FALSE);
+			// 외부 네트워크 어댑터 선택 콤보 박스와 IP 주소 입력 컨트롤을 비활성화
 			SetVisible(m_ComboxAdapter2, m_SrcIPADDRESS2, FALSE);
+			// 목적지 IP 주소 입력 컨트롤을 활성화
 			m_DstIPADDRESS.EnableWindow(TRUE);
+			// NI Layer 참조 -> 패킷 수신 활성화
 			m_NILayer->Receiveflip();
+			// 내부 네트워크 정보를 설정
 			SetADDR(MAC[INNER], IP[INNER], srcip[INNER], INNER);
+			// 외부 네트워크 정보를 설정
 			SetADDR(MAC[OUTER], IP[OUTER], srcip[OUTER], OUTER);
+			// 버튼의 텍스트를 "ReSelect"로 변경
 			CDialog::SetDlgItemTextW(IDC_BUTTON_SELECT, _T("ReSelect"));
+			// 타이머를 1초로 설정
 			SetTimer(1, 1000, NULL);
+
+			// 내부 네트워크 NI Layer의 Receive Thread 시작
 			AfxBeginThread(m_NILayer->ThreadFunction_RECEIVE, m_NILayer);
+			// 외부 네트워크 NI Layer의 Receive Thread 시작
 			AfxBeginThread(m_NILayer->ThreadFunction_RECEIVE2, m_NILayer);
+
+			// GARP 요청 전송
 			OnBnClickedButtonGArpSend();
 		}
 		else {
@@ -456,31 +513,49 @@ void CARPDlg::OnBnClickedButtonSelect()
 		}
 	}
 	else {
+		// 내부 네트워크 어댑터 선택 콤보 박스와 IP 주소 입력 컨트롤을 활성화
 		SetVisible(m_ComboxAdapter, m_SrcIPADDRESS, TRUE);
+		// 외부 네트워크 어댑터 선택 콤보 박스와 IP 주소 입력 컨트롤을 활성화
 		SetVisible(m_ComboxAdapter2, m_SrcIPADDRESS2, TRUE);
+		// 목적지 IP 주소 입력 컨트롤을 비활성화
 		m_DstIPADDRESS.EnableWindow(FALSE);
+		// NI Layer 참조 -> 패킷 수신 비활성화
 		m_NILayer->Receiveflip();
+		// 버튼의 텍스트를 "Select"로 변경
 		CDialog::SetDlgItemTextW(IDC_BUTTON_SELECT, _T("Select"));
+		// 타이머를 종료
 		KillTimer(1);
 	}
 }
 
+// ARP 요청 보내는 함수
 void CARPDlg::OnBnClickedButtonSendArp()
 {
+	// 출발지 IP와 목적지 IP 주소를 저장할 변수
 	unsigned char srcip[2][IP_ADDR_SIZE] = {0,}, dstip[IP_ADDR_SIZE] = {0,};
-	m_SrcIPADDRESS.GetAddress(srcip[OUTER][0], srcip[OUTER][1], srcip[OUTER][2], srcip[OUTER][3]);
+	// 내부 네트워크의 IP 주소를 가져옴
 	m_SrcIPADDRESS2.GetAddress(srcip[INNER][0], srcip[INNER][1], srcip[INNER][2], srcip[INNER][3]);
+	// 외부 네트워크의 IP 주소를 가져옴
+	m_SrcIPADDRESS.GetAddress(srcip[OUTER][0], srcip[OUTER][1], srcip[OUTER][2], srcip[OUTER][3]);
+	// 목적지 IP 주소를 가져옴
 	m_DstIPADDRESS.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
+	// 목적지 IP 주소 입력 컨트롤이 활성화되어 있고, 네트워크 어댑터 선택 콤보 박스가 비활성화되어 있는 경우 실행
+	// (== Select 버튼이 눌렸을 때)
 	if (m_DstIPADDRESS.IsWindowEnabled() && !m_ComboxAdapter.IsWindowEnabled()) {
+
+		// IP Layer 참조
+
+		// 내부 네트워크의 출발지 IP 주소를 설정
 		m_IPLayer->SetSourceAddress(srcip[INNER], INNER);
+		// 외부 네트워크의 출발지 IP 주소를 설정
 		m_IPLayer->SetSourceAddress(srcip[OUTER], OUTER);
+		// 내부 네트워크의 목적지 IP 주소를 설정
 		m_IPLayer->SetDestinAddress(dstip, INNER);
+		// 외부 네트워크의 목적지 IP 주소를 설정
 		m_IPLayer->SetDestinAddress(dstip, OUTER);
-		//if (memcmp(srcip, dstip, IP_ADDR_SIZE)==0) {
-		//	AfxMessageBox(_T("Fail : Invalid Address"));
-		//	return;
-		//}
+	
+		// 목적지 IP 주소가 유효한지 확인 
 		int check = 0;
 		for (int i = 0; i < IP_ADDR_SIZE; i++) {
 			check += dstip[i];
@@ -489,36 +564,52 @@ void CARPDlg::OnBnClickedButtonSendArp()
 			AfxMessageBox(_T("Fail : Invalid Address"));
 			return;
 		}
+		// 내부 네트워크의 IP Layer로 ARP 패킷을 전송
 		mp_UnderLayer->Send((unsigned char*)"dummy Data", 11, INNER);
+		// 외부 네트워크의 IP Layer로 ARP 패킷을 전송
 		mp_UnderLayer->Send((unsigned char*)"dummy Data", 11, OUTER);
 	}
 	else {
+		// 어댑터 설정 경고 메시지를 출력
 		AfxMessageBox(_T("Fail : Set Adapter first"));
 		return;
 	}
 }
 
 
-
+// GARP 요청 함수
 void CARPDlg::OnBnClickedButtonGArpSend()
 {
 	CString sgarpaddr;
 	unsigned char dstip[2][IP_ADDR_SIZE] = { 0, };
 	char *a = "dummy";
+
+	// GARP 전송 상태를 설정
 	m_ARPLayer->isGARP(TRUE);
+	// 외부 네트워크 주소를 변수에 저장
 	m_SrcIPADDRESS.GetAddress(dstip[OUTER][0], dstip[OUTER][1], dstip[OUTER][2], dstip[OUTER][3]);
+	// 외부 네트워크의 목적지 IP 주소를 설정
 	m_IPLayer->SetDestinAddress(dstip[OUTER], OUTER);
+	// 외부 네트워크의 출발지 IP 주소를 설정
 	m_IPLayer->SetSourceAddress(dstip[OUTER], OUTER);
+
+	// 외부 네트워크로 GARP 패킷을 전송
 	mp_UnderLayer->Send((unsigned char*)a, 6, OUTER);
 
+	// 내부 네트워크 주소를 변수에 저장
 	m_SrcIPADDRESS2.GetAddress(dstip[INNER][0], dstip[INNER][1], dstip[INNER][2], dstip[INNER][3]);
+	// 내부 네트워크의 목적지 IP 주소를 설정
 	m_IPLayer->SetDestinAddress(dstip[INNER], INNER);
+	// 내부 네트워크의 출발지 IP 주소를 설정
 	m_IPLayer->SetSourceAddress(dstip[INNER], INNER);
+	// 내부 네트워크로 GARP 패킷을 전송
 	mp_UnderLayer->Send((unsigned char*)a, 6, INNER);
 	
+	// GARP 전송 상태를 해제
 	m_ARPLayer->isGARP(FALSE);
 }
 
+// proxy ARP "Add"버튼이 클릭되었을 때 호출됨
 void CARPDlg::OnBnClickedButtonAddRoutingTableEntry()
 {
 	mRoutingTabledlg.ShowWindow(SW_SHOW);
@@ -529,55 +620,70 @@ void CARPDlg::OnBnClickedButtonAddProxyEntry()
 	// TODO: 삭제 요함
 }
 
+// Routing table에 항목 추가 함수
 void CARPDlg::AddRoutingTable(const int _index, CString ip1, CString ip2, CString ip3, CString mFlag, CString mInterface)
 {
+	// MAC 주소와 IP 주소를 저장할 변수
 	UCHAR mac[ENET_ADDR_SIZE] = { 0, };
 	UCHAR _ip[ENET_ADDR_SIZE] = { 0, };
 	CString deviceName, IP, ADDR;
 	CString count;
-	////선택된 어뎁터 이름을 불러옵니다.
-//	m_ComboxAdapter.GetLBText(_index, deviceName);
-	////선택된 어뎁터의 맥 주소를 불러옵니다.
-	//m_NILayer->GetMacAddress(_index, mac);
-	////UCHAR에서 STRING으로 IP 및 ETERNET 주소를 변환합니다. 
-	//addrToStr(ARP_IP_TYPE, IP, ip);
-	//addrToStr(ARP_ENET_TYPE, ADDR, addr);
+
+	// 문자열로 주어진 IP 주소를 바이트 배열로 변환
 	StrToaddr(ARP_IP_TYPE, _ip, ip1);
 	StrToaddr(ARP_IP_TYPE, _ip, ip2);
 	StrToaddr(ARP_IP_TYPE, _ip, ip3);
-	////ARPLayer 계층의 Proxy Table에 등록합니다.
+
+	// 라우팅 테이블의 현재 항목 수를 가져옴
 	int nListIndex = m_ListStaticRoutingTable.GetItemCount();
+	// 항목 수를 문자열로 변환
 	count.Format(_T("%d"), nListIndex + 1);
-	////Dlg Layer의 Proxy Table에 등록합니다.
+
+	// Dlg Layer의 Proxy Table에 등록
 	m_ListStaticRoutingTable.InsertItem(nListIndex, deviceName);
+	
+	// IP 주소 1
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 0, ip1);
+	// IP 주소 2
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 1, ip2);
+	// IP 주소 3
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 2, ip3);
+	// flag
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 3, mFlag);
+	// 인터페이스
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 4, mInterface);
+	// 항목 번호
 	m_ListStaticRoutingTable.SetItemText(nListIndex, 5, count);
 }
 
-
+// Routing table의 항목을 삭제하는 함수
 void CARPDlg::OnBnClickedButtonDelRoutingTableEntry()
-{
+{   
+	// 현재 선택된 항목의 인덱스를 가져옴
 	int nListIndex = m_ListStaticRoutingTable.GetSelectionMark();
+	// 선택된 항목을 삭제
 	m_ListStaticRoutingTable.DeleteItem(nListIndex);
 }
 
-
+// 외부 네트워크 어댑터 선택 콤보 박스의 선택이 변경되었을 때 호출되는 함수
 void CARPDlg::OnCbnSelchangeComboAdapter2()
 {
 	CString MAC, IPV4, IPV6;
+	// 선택된 어댑터의 MAC 주소를 가져옴
 	unsigned char* macaddr = m_NILayer->SetAdapter(m_ComboxAdapter2.GetCurSel(), INNER);
 	if (macaddr == nullptr) {
 		MAC = DEFAULT_EDIT_TEXT;
 	}
 	else {
+		// MAC 주소를 문자열로 변환
 		MAC.Format(_T("%hhx:%hhx:%hhx:%hhx:%hhx:%hhx"), macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+		// 출발지 MAC 주소를 설정
 		m_EtherLayer->SetSourceAddress(macaddr, INNER);
+		// IP 주소를 가져옴
 		m_NILayer->GetIPAddress(IPV4, IPV6, INNER, TRUE);
 	}
+	// MAC 주소를 텍스트 박스에 출력
 	m_editSrcHwAddr2.SetWindowTextW(MAC);
+	// IPv4 주소를 텍스트 박스에 출력
 	m_SrcIPADDRESS2.SetWindowTextW(IPV4);
 }
