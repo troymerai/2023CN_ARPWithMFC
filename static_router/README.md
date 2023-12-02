@@ -4,14 +4,18 @@
 
 
 # 실습 시나리오
-1. 두 대의 PC에서 각각 프로그램을 실행한다.
-2. 두 대의 PC는 같은 네트워크로 연결한다. (같은 WIFI)
-3. ARP Request 및 Reply를 받을 NIC를 선택 및 개방한다.
-4. HostA는 Gratuitous ARP란에 수정된 MAC 주소를 입력한다.
-5. HostA에서 GARP request를 broadcast로 전송한다.(이 요청에는 출발지의 MAC 주소와 IP 주소, 그리고 목적지의 MAC 주소와 IP 주소가 모두 자신의 것으로 설정되어있음)
-6. 이 요청을 수신한 모든 장치(== HostB)는 자신의 ARP 캐시를 업데이트한다.
-7. 만약 장치가 이미 해당 IP 주소를 사용하고 있었다면, (== IP 주소 충돌) 이 경우, 해당 장치는 이를 충돌로 인식하고 출발지)에게 GARP reply을 작성한다.
-8. HostA에서 GARP reply 패킷을 받았으면 사용자에게 메시지를 보낸다.
+1. 두 대의 PC와 라우터를 준비한다.
+2. 두 대의 PC는 각각 라우터와 이더넷 케이블로 연결한다.
+3. 각 PC에서 네트워크 인터페이스 카드 (NIC)를 설정한다.
+4. 라우터에서 각 PC로 향하는 static route를 설정한다. 이 때, 각 PC의 IP 주소를 목적지로 설정한다.
+5. PC1에서 ping 명령어를 이용해 PC2로 ICMP Echo Request를 전송한다.
+6. 라우터가 PC1에서 온 ICMP Echo Request 패킷을 받는다.
+7. 라우터는 static routing table을 확인하여 패킷의 목적지로 PC2를 찾는다.
+8. 라우터는 패킷을 PC2로 전송한다.
+9. PC2는 ICMP Echo Request 패킷을 받아 ICMP Echo Reply 패킷을 생성하여 라우터로 전송한다.
+10. 라우터는 Static Routing Table을 확인하여 패킷의 목적지로 PC1을 찾는다.
+11. 라우터는 패킷을 PC1으로 전송한다.
+12. PC1은 ICMP Echo Reply 패킷을 받아 연결이 성공적으로 이루어졌음을 확인한다.
 
 ## 실습 시나리오 시퀀스 다이어그램
 ```mermaid
