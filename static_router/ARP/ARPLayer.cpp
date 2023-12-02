@@ -101,7 +101,7 @@ BOOL CARPLayer::Receive(unsigned char* ppayload, int iosel) {
 		if (index >= 0) {
 
 		// 20231202 수정
-		// GARP 코드는 inline, outpath 구조 적용해야함
+		// GARP 코드는 inline 구조 적용해야함
 		// 
 		//	// 자기가 보낸 GARP에 대해서는 reply를 안쓰게 예외 처리
 		//	if (memcmp(arp_data->protocol_srcaddr, myip, IP_ADDR_SIZE) != 0) {
@@ -314,7 +314,7 @@ BOOL CARPLayer::RSend(unsigned char* ppayload, int nlength, unsigned char* gatew
 	memcpy(temp, ppayload, nlength);
 	
 
-	// 하위 레이어(Ethernet 레이어)를 가져옴
+	// 하위 레이어(Ethernet 레이어) 객체 생성
 	CEthernetLayer* m_ether = (CEthernetLayer*)mp_UnderLayer;
 	int idx = 0;
 
@@ -324,6 +324,8 @@ BOOL CARPLayer::RSend(unsigned char* ppayload, int nlength, unsigned char* gatew
 		{
 			m_ether->SetDestinAddress(m_proxyTable[i].hardware_addr, iosel);
 			m_ether->SetType(ETHER_IP_TYPE, iosel);
+
+			// proxy table에서 찾았으면 그쪽으로 패킷 전송 요청하고 함수 종료
 			return mp_UnderLayer->Send(temp, nlength, iosel);
 		}
 	}
@@ -340,8 +342,10 @@ BOOL CARPLayer::RSend(unsigned char* ppayload, int nlength, unsigned char* gatew
 		// ARP reply을 기다림
 		Wait(3000);
 		
-		// ARP reply 받으면 그쪽으로 다시 보내주기
+		// ARP reply 받으면 arp table 다시 검색 
 		idx = inCache(gatewayIP);
+
+		// arp table에도 없으면 FALSE 내고 함수 종료
 		if (idx == -1) {
 			return FALSE;
 		}
