@@ -1,4 +1,7 @@
-# 2023CN_ARPWithMFC
+# 프로토콜 스택
+
+![image](https://github.com/troymerai/2023CN_ARPWithMFC/assets/107831875/07cc0711-fb2c-4544-a3a3-5ed91797ff18)
+
 
 # 실습 시나리오
 1. 두 대의 PC에서 각각 프로그램을 실행한다.
@@ -176,8 +179,6 @@ classDiagram
     }
     CNILayer --|> CBaseLayer : inherits
 ```
-
-# 프로토콜 스택
 
 
 
