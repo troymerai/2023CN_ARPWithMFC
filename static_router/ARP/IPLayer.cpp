@@ -147,9 +147,9 @@ void CIPLayer::AddRouteTable(unsigned char* _destination_ip, unsigned char* _net
     // 라우팅 테이블의 시작점을 가리키는 반복자를 선언
     std::list<ROUTING_TABLE_NODE>::iterator add_point = route_table.begin();
 
-    //// 새로운 루트를 추가할 위치 찾기
-    // 라우팅 테이블의 끝에 도달하거나 새로운 루트의 게이트웨이가 
-    // 현재 루트의 게이트웨이보다 긴 헤더를 가질 때까지 반복
+    //// 새로운 루트를 추가할 위치 찾기 (Longest Match 방식 사용)
+    // 라우팅 테이블의 끝에 도달하거나 
+    // 새로운 루트의 게이트웨이가 현재 루트의 게이트웨이보다 긴 prefix(subnet mask)를 가질 때까지 반복
     while (add_point != route_table.end() && LongestPrefix(add_point->gateway, rt.gateway)) {
         add_point++;
     }
@@ -211,7 +211,9 @@ void CIPLayer::SetDefaultGateway(unsigned char* _gateway, unsigned char _flag, u
     }
  }
 
-// 두 주소의 최장 공통 헤더 길이를 비교하는 함수
+// Longest Match 방식
+// 목적지 주소와 가장 많이 일치하는 경로를 선택하기 위해
+// 두 주소의 최장 prefix(subnet mask의 양의 이진 비트) 길이를 비교하는 함수
 // 라우팅 테이블에서 라우트를 추가하거나 찾을 때 사용
 bool CIPLayer::LongestPrefix(unsigned char* a, unsigned char* b) {
 
@@ -219,7 +221,7 @@ bool CIPLayer::LongestPrefix(unsigned char* a, unsigned char* b) {
     for (int i = 0; i < IP_ADDR_SIZE; i++) {
 
         // a의 i번째 바이트가 b의 i번째 바이트보다 작은 경우, false를 반환
-        // a가 b보다 작은 주소를 가지고 있음을 의미
+        // a가 b보다 덜 일치하는 주소를 가지고 있음을 의미
         if (a[i] < b[i])return false;
     }
 
