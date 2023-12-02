@@ -93,6 +93,89 @@ sequenceDiagram
     activate PC1
 ```
 
+## 클래스 다이어그램
+```mermaid
+classDiagram
+    class CBaseLayer{
+        +CBaseLayer(char* pName)
+        +~CBaseLayer()
+        +SetUnderUpperLayer(CBaseLayer* pUULayer)
+        +SetUpperUnderLayer(CBaseLayer* pUULayer)
+        +SetUpperLayer(CBaseLayer* pUpperLayer)
+        +SetUnderLayer(CBaseLayer* pUnderLayer)
+        +GetUpperLayer(int nindex)
+        +GetUnderLayer()
+        +GetLayerName()
+    }
+    class CIPLayer{
+      +CIPLayer(char* pName)
+      +~CIPLayer()
+      +void ResetHeader(int iosel)
+      +void SetHeaderFields(unsigned char* ppayload, int iosel)
+      +unsigned char* GetSourceAddress(int iosel)
+      +unsigned char* GetDestinAddress(int iosel)
+      +void SetSourceAddress(unsigned char* pAddress, int iosel)
+      +void SetDestinAddress(unsigned char* pAddress, int iosel)
+      +BOOL Send(unsigned char* ppayload, int nlength, int iosel)
+      +BOOL RSend(unsigned char* ppayload, int nlength, unsigned char* gatewayIP, int iosel)
+      +BOOL Receive(unsigned char* ppayload, int iosel)
+      +void AddRouteTable(unsigned char* _destination_ip, unsigned char* _netmask, unsigned char* _gateway, unsigned char _flag, unsigned char interFace)
+      +void DelRouteTable(unsigned char index)
+      +void SetDefaultGateway(unsigned char* _gateway, unsigned char _flag, unsigned char interFace)
+      +bool LongestPrefix(unsigned char* a, unsigned char* b)
+      +void Routing(unsigned char* dest_ip, unsigned char* ppayload, int iosel)
+    }
+    CIPLayer --|> CBaseLayer : inherits
+    class CARPLayer{
+      +CARPLayer(char* pName)
+      +~CARPLayer()
+      +bool Receive(unsigned char* ppayload, int iosel)
+      +bool Send(unsigned char* ppayload, int nlength, int iosel)
+      +void Wait(DWORD dwMillisecond)
+      +bool RSend(unsigned char* ppayload, int nlength, unsigned char* gatewayIP, int iosel)
+      +void setmyAddr(CString MAC, CString IP, int iosel)
+      +void setType(const unsigned short htype, const unsigned short ptype, int iosel)
+      +void setOpcode(const unsigned short opcode, int iosel)
+      +void setSrcAddr(unsigned char enetAddr[], unsigned char ipAddr[], int iosel)
+      +void setDstAddr(unsigned char enetAddr[], unsigned char ipAddr[], int iosel)
+      +void swapaddr(unsigned char lAddr[], unsigned char rAddr[], unsigned char size)
+      +void updateTable()
+      +void deleteItem(CString IP)
+      +std::vector<ARP_NODE> getTable()
+      +void clearTable()
+      +void createProxy(unsigned char* src, unsigned char* ip, unsigned char* enet)
+      +void deleteProxy(const int index)
+    }
+    CARPLayer --|> CBaseLayer : inherits
+    class CEthernetLayer{
+        +CEthernetLayer(char* pName)
+        +~CEthernetLayer()
+        +void ResetHeader(int iosel)
+        +unsigned char* GetSourceAddress(int iosel)
+        +unsigned char* GetDestinAddress(int iosel)
+        +void SetSourceAddress(unsigned char* pAddress, int iosel)
+        +void SetDestinAddress(unsigned char* pAddress, int iosel)
+        +BOOL Send(unsigned char* ppayload, int nlength, int iosel)
+        +void SetType(unsigned short type, int iosel)
+        +BOOL Receive(unsigned char* ppayload, int iosel)
+    }
+    CEthernetLayer --|> CBaseLayer : inherits
+    class CNILayer{
+        +CNILayer(char* pName)
+        +~CNILayer()
+        +BOOL Receive(unsigned char* pkt, int iosel)
+        +BOOL Send(unsigned char* ppayload, int nlength, int iosel)
+        +void SetAdapterComboBox(CComboBox& adapterlist)
+        +UCHAR* SetAdapter(const int index, const int iosel)
+        +void GetMacAddressList(CStringArray& adapterlist)
+        +void GetMacAddress(const int index, UCHAR *mac, const int iosel)
+        +void GetIPAddress(CString& ipv4addr, CString& ipv6addr, const int iosel, bool isIOsel)
+        +UINT ThreadFunction_RECEIVE(LPVOID pParam)
+        +UINT ThreadFunction_RECEIVE2(LPVOID pParam)
+        +void Receiveflip()
+    }
+    CNILayer --|> CBaseLayer : inherits
+```
 
 # 프로토콜 스택
 
