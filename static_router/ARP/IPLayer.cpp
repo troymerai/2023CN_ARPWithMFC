@@ -44,7 +44,7 @@ void CIPLayer::SetHeaderFields(unsigned char* ppayload, int iosel){
     m_sHeader[iosel].id = pFrame->id;
     // TTL(Time To Live)를 가져와 설정
     m_sHeader[iosel].ttl = pFrame->ttl;
-    // TTL을 1 감소. 패킷이 네트워크에서 영원히 떠돌지 않도록 하기 위한 장치
+    // TTL을 1 감소 ** 패킷이 네트워크에서 영원히 떠돌지 않도록 하기 위한 장치
     m_sHeader[iosel].ttl = m_sHeader[iosel].ttl - 1;    
     // 프로토콜 타입을 가져와 설정
     m_sHeader[iosel].ptype = pFrame->ptype;
@@ -86,7 +86,8 @@ BOOL CIPLayer::Send(unsigned char* ppayload, int nlength, int iosel) {
     memcpy(m_sHeader[iosel].ip_data, ppayload, nlength);
 
     // 전송할 데이터는 m_sHeader[iosel] 
-    // 데이터의 길이는 IP_HEADER_SIZE + nlength
+    // 데이터의 길이는 IP_HEADER_SIZE + nlength 
+    // 하위 계층으로 패킷 전송 (여기서는 ARP layer)
     bSuccess = this->GetUnderLayer()->Send((unsigned char*)&m_sHeader[iosel], IP_HEADER_SIZE + nlength, iosel);
     
     // 함수의 결과로 bSuccess를 반환
@@ -184,7 +185,7 @@ void CIPLayer::SetDefaultGateway(unsigned char* _gateway, unsigned char _flag, u
     // default gateway가 있는 지 확인
     // 라우팅 테이블의 마지막 노드의 목적지 IP가 '0.0.0.0'인지 확인 
     if (!memcmp(route_table.back().destination_ip, zero, IP_ADDR_SIZE)) {   
-        // 기본 게이트웨이가 이미 있는 경우, 새로운 기본 게이트웨이로 설정
+        // default gateway가 이미 있는 경우, 새로운 default gateway로 설정
         memcpy(&route_table.back().gateway, _gateway, IP_ADDR_SIZE);
         // 플래그 설정
         route_table.back().flag = _flag;
@@ -198,7 +199,7 @@ void CIPLayer::SetDefaultGateway(unsigned char* _gateway, unsigned char _flag, u
         // 새로운 노드의 목적지 IP와 넷마스크를 '0.0.0.0'로 설정
         memset(&tmp->destination_ip, 0, IP_ADDR_SIZE);
         memset(&tmp->netmask, 0, IP_ADDR_SIZE);
-        // 새로운 노드의 게이트웨이를 새로운 기본 게이트웨이로 설정
+        // 새로운 노드의 게이트웨이를 새로운 default gateway로 설정
         memcpy(&tmp->gateway, _gateway, IP_ADDR_SIZE);
         // 플래그 설정
         tmp->flag = _flag;
@@ -249,8 +250,8 @@ void CIPLayer::Routing(unsigned char* dest_ip, unsigned char* ppayload, int iose
                 mp_UnderLayer->RSend(ppayload, pFrame->tlength, dest_ip, row._interface);
             }
 
-            // 라우트가 활성화되어 있고, 대상이 게이트웨이인 경우 
-            // 패킷을 게이트웨이에 전송
+            // 라우트가 활성화되어 있고, 대상이 gateway인 경우 
+            // 패킷을 gateway에 전송
             else if ((row.flag & IP_ROUTE_UP)&& (row.flag & IP_ROUTE_GATEWAY)) {
                 mp_UnderLayer->RSend(ppayload, pFrame->tlength, row.gateway, row._interface); //Gateway IP의 MAC address를 얻기 위해...
             }

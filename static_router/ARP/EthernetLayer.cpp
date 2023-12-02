@@ -106,8 +106,8 @@ BOOL CEthernetLayer::Receive(unsigned char* ppayload, int iosel)
 			bSuccess = mp_aUpperLayer[1]->Receive(pFrame->enet_data, iosel);
 	}
 
+	// GARP
 	// 목적지의 주소가 브로드캐스트 주소와 같다면 패킷을 수신
-	// GARP는 맞는데 PARP는?
 	else if (memcmp(pFrame->enet_dstaddr, broad, ENET_ADDR_SIZE) == 0) {
 		if (pFrame->enet_type == ETHER_ARP_TYPE)
 			bSuccess = mp_aUpperLayer[1]->Receive(pFrame->enet_data, iosel);
