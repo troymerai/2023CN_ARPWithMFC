@@ -1,4 +1,7 @@
-# 2023CN_ARPWithMFC
+# 프로토콜 스택
+
+![image](https://github.com/troymerai/2023CN_ARPWithMFC/assets/107831875/74465daa-b957-454d-8b0c-e03aa491155a)
+
 
 # 실습 시나리오
 1. 두 대의 PC에서 각각 프로그램을 실행한다.
@@ -164,10 +167,6 @@ sequenceDiagram
 	C->>C: ARP cache table UI 업데이트
 	A->>C: ARP cache table 확인
 ```
-
-
-# 프로토콜 스택
-
 
 
 
