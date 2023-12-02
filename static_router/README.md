@@ -13,22 +13,86 @@
 ## 실습 시나리오 시퀀스 다이어그램
 ```mermaid
 sequenceDiagram
-		autonumber
-    participant HostA as Host A
-    participant Network as Network
-    participant HostB as Host B
+    participant PC1
+    participant Router
+    participant PC2
 
-    Note over HostA: Gratuitous ARP에 수정된 MAC 주소 입력
-    HostA->>Network: GARP request broadcast 전송
-    Network->>HostB: GARP request 패킷 전달
-    Note over HostB: GARP request 수신 후 ARP 캐시 업데이트
-    alt IP 주소 충돌 발생
-        Note over HostB: 해당 IP 주소를 이미 사용 중인 경우
-        HostB->>Network: GARP reply 작성 후 전송
-        Network->>HostA: GARP reply 패킷 전달
-        Note over HostA: GARP reply 패킷 수신 후 사용자에게 메시지 전송
-    end
+    PC1->>Router: ICMP Echo Request (Ping)
+    activate Router
+    Router-->>PC2: ICMP Echo Request (Ping)
+    activate PC2
+    PC2-->>Router: ICMP Echo Reply
+    deactivate PC2
+    Router-->>PC1: ICMP Echo Reply
+    deactivate Router
 ```
+
+각 시퀀스에 따른 세부 시퀀스 다이어그램
+
+### PC1 -> Router : ICMP Echo Request (Ping)
+```mermaid
+sequenceDiagram
+    participant PC1 as PC1 (IP Stack)
+    participant PC1NIC as PC1 (Network Interface)
+    participant RouterNIC as Router (Network Interface)
+    participant Router as Router (IP Stack)
+
+    PC1->>PC1NIC: Create ICMP Echo Request
+    activate PC1NIC
+    PC1NIC->>RouterNIC: Send ICMP Echo Request
+    activate RouterNIC
+    RouterNIC->>Router: Receive ICMP Echo Request
+    activate Router
+```
+
+### Router -> PC2 : ICMP Echo Request (Ping)
+```mermaid
+sequenceDiagram
+    participant Router as Router (IP Stack)
+    participant RouterNIC as Router (Network Interface)
+    participant PC2NIC as PC2 (Network Interface)
+    participant PC2 as PC2 (IP Stack)
+
+    Router->>RouterNIC: Forward ICMP Echo Request
+    activate RouterNIC
+    RouterNIC->>PC2NIC: Send ICMP Echo Request
+    activate PC2NIC
+    PC2NIC->>PC2: Receive ICMP Echo Request
+    activate PC2
+```
+
+### PC2 -> Router : ICMP Echo Reply
+```mermaid
+sequenceDiagram
+    participant PC2 as PC2 (IP Stack)
+    participant PC2NIC as PC2 (Network Interface)
+    participant RouterNIC as Router (Network Interface)
+    participant Router as Router (IP Stack)
+
+    PC2->>PC2NIC: Create ICMP Echo Reply
+    activate PC2NIC
+    PC2NIC->>RouterNIC: Send ICMP Echo Reply
+    activate RouterNIC
+    RouterNIC->>Router: Receive ICMP Echo Reply
+    activate Router
+```
+
+### Router -> PC1 : ICMP Echo Reply
+```mermaid
+sequenceDiagram
+    participant Router as Router (IP Stack)
+    participant RouterNIC as Router (Network Interface)
+    participant PC1NIC as PC1 (Network Interface)
+    participant PC1 as PC1 (IP Stack)
+
+    Router->>RouterNIC: Forward ICMP Echo Reply
+    activate RouterNIC
+    RouterNIC->>PC1NIC: Send ICMP Echo Reply
+    activate PC1NIC
+    PC1NIC->>PC1: Receive ICMP Echo Reply
+    activate PC1
+```
+
 
 # 프로토콜 스택
 
