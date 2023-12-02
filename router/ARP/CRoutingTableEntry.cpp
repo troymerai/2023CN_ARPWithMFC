@@ -1,6 +1,13 @@
 ﻿// CRoutingTableEntry.cpp: 구현 파일
 //
 
+////////////////////////////////////////////////////
+//
+// Static Routing Table에 추가
+//
+//
+////////////////////////////////////////////////////
+
 #include "pch.h"
 #include "ARP.h"
 #include "afxdialogex.h"
@@ -9,18 +16,23 @@
 
 // CRoutingTableEntry 대화 상자
 
+// CRoutingTableEntry 클래스를 동적으로 생성하는 매크로
 IMPLEMENT_DYNAMIC(CRoutingTableEntry, CDialogEx)
 
+// 생성자
 CRoutingTableEntry::CRoutingTableEntry(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ROUTING_TABLE, pParent)
 {
 
 }
 
+// 소멸자
 CRoutingTableEntry::~CRoutingTableEntry()
 {
 }
 
+// 데이터를 교환하는 함수
+// 컨트롤 변수에 대한 동기화를 수행
 void CRoutingTableEntry::DoDataExchange(CDataExchange* pDX)
 {
 	DDX_Control(pDX, IDC_IPADDRESS_ROUTING_DESTINATION, m_IPADDRESS_Destination);
@@ -39,7 +51,7 @@ void CRoutingTableEntry::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 }
 
-
+// 메시지 맵을 시작하는 매크로
 BEGIN_MESSAGE_MAP(CRoutingTableEntry, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CRoutingTableEntry::OnBnClickedOk)
 END_MESSAGE_MAP()
@@ -47,7 +59,7 @@ END_MESSAGE_MAP()
 
 // CRoutingTableEntry 메시지 처리기
 
-
+// 대화 상자가 초기화되면 호출되는 함수
 BOOL CRoutingTableEntry::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -57,7 +69,7 @@ BOOL CRoutingTableEntry::OnInitDialog()
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-
+// 확인 버튼을 클릭했을 때 호출되는 함수
 void CRoutingTableEntry::OnBnClickedOk()
 {
 	CString mDestination;
