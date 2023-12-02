@@ -11,6 +11,12 @@
 5. PC1에서 ping 명령어를 이용해 PC2로 ICMP Echo Request를 전송한다.
 6. 라우터가 PC1에서 온 ICMP Echo Request 패킷을 받는다.
 7. 라우터는 static routing table을 확인하여 패킷의 목적지로 PC2를 찾는다.
+<br/>[PC1 - 라우터 - PC2 구조가 아닌 경우] ( == 경로에 라우터가 더 있는 경우)
+    - static routing table에 없는 경우 default gateway의 IP 주소를 찾기 위해 arp cache table을 확인한다.
+    - arp cache table에도 없으면 arp request를 보낸다.
+    - 3초 기다렸다가 arp reply를 받은 뒤 다시 arp cache table을 확인한다.
+    - arp cache table에 default gateway의 정보가 없으면 사용자에게 에러 메시지를 보낸다.
+    - arp cache table에 default gateway의 정보가 있으면 default gateway로 패킷을 보낸다.
 8. 라우터는 패킷을 PC2로 전송한다.
 9. PC2는 ICMP Echo Request 패킷을 받아 ICMP Echo Reply 패킷을 생성하여 라우터로 전송한다.
 10. 라우터는 Static Routing Table을 확인하여 패킷의 목적지로 PC1을 찾는다.
