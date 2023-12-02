@@ -347,6 +347,10 @@ BOOL CARPLayer::RSend(unsigned char* ppayload, int nlength, unsigned char* gatew
 
 		// arp table에도 없으면 FALSE 내고 함수 종료
 		if (idx == -1) {
+
+			// test용 코드 데모 시 삭제할 것 (문제 생기면 디버깅 안해도 알기 위해서..)
+			AfxMessageBox(_T("proxy & arp table에서 패킷 전송할 곳을 찾지 못했음!"));
+
 			return FALSE;
 		}
 	}
