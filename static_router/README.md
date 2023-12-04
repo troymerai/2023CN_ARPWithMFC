@@ -27,17 +27,25 @@
 ```mermaid
 sequenceDiagram
     participant PC1
-    participant Router
-    participant PC2
+    participant Router1
+    participant Router2
+    participant PC2(외부 네트워크 호스트)
 
-    PC1->>Router: ICMP Echo Request (Ping)
-    activate Router
-    Router-->>PC2: ICMP Echo Request (Ping)
-    activate PC2
-    PC2-->>Router: ICMP Echo Reply
-    deactivate PC2
-    Router-->>PC1: ICMP Echo Reply
-    deactivate Router
+    autonumber
+    PC1->>Router1: Set up Routing Table
+    activate Router1
+    PC1->>Router1: ICMP Echo Request (Ping)
+    activate Router1
+    Router1->>Router2: Forward ICMP Echo Request (Ping)
+    activate Router2
+    Router2-->>PC2(외부 네트워크 호스트): ICMP Echo Request (Ping)
+    activate PC2(외부 네트워크 호스트)
+    PC2(외부 네트워크 호스트)-->>Router2: ICMP Echo Reply
+    deactivate PC2(외부 네트워크 호스트)
+    Router2-->>Router1: Forward ICMP Echo Reply
+    deactivate Router2
+    Router1-->>PC1: ICMP Echo Reply
+    deactivate Router1
 ```
 
 각 시퀀스에 따른 세부 시퀀스 다이어그램
@@ -45,66 +53,90 @@ sequenceDiagram
 ### PC1 -> Router : ICMP Echo Request (Ping)
 ```mermaid
 sequenceDiagram
+    autonumber
     participant PC1 as PC1 (IP Stack)
     participant PC1NIC as PC1 (Network Interface)
-    participant RouterNIC as Router (Network Interface)
-    participant Router as Router (IP Stack)
+    participant Router1NIC as Router1 (Network Interface)
+    participant Router1 as Router1 (IP Stack)
+    participant Router2NIC as Router2 (Network Interface)
+    participant Router2 as Router2 (IP Stack)
     participant PC2NIC as PC2 (Network Interface)
     participant PC2 as PC2 (IP Stack)
 
     PC1->>PC1NIC: ICMP Echo Request (Ping)
     activate PC1NIC
     
-    PC1NIC->>RouterNIC: Send ICMP Echo Request
-    activate RouterNIC
+    PC1NIC->>Router1NIC: Send ICMP Echo Request
+    activate Router1NIC
     
-    RouterNIC->>Router: Receive ICMP Echo Request
-    activate Router
+    Router1NIC->>Router1: Receive ICMP Echo Request
+    activate Router1
     
-    Router->>Router: Check ARP Cache for PC2 IP
-    opt PC2(또는 default gateway)의 IP 정보가 ARP Cache에 없는 경우
-        Router->>RouterNIC: Send ARP Request for default gateway
-        activate RouterNIC
+    Router1->>Router1: Check Routing Table for PC2 IP
+    opt PC2(또는 default gateway)의 IP 정보가 Routing Table에 없는 경우
+        Router1->>Router1NIC: Send ARP Request for default gateway
+        activate Router1NIC
         
-        RouterNIC->>PC2NIC: Broadcast ARP Request
-        activate PC2NIC
+        Router1NIC->>Router2NIC: Broadcast ARP Request
+        activate Router2NIC
         
-        PC2NIC->>PC2: Receive ARP Request
-        activate PC2
+        Router2NIC->>Router2: Receive ARP Request
+        activate Router2
         
-        PC2->>PC2NIC: Send ARP Reply
-        deactivate PC2
+        Router2->>Router2NIC: Send ARP Reply
+        deactivate Router2
         
-        PC2NIC->>RouterNIC: Send ARP Reply
-        deactivate PC2NIC
+        Router2NIC->>Router1NIC: Send ARP Reply
+        deactivate Router2NIC
         
-        RouterNIC->>Router: Receive ARP Reply
-        activate Router
+        Router1NIC->>Router1: Receive ARP Reply
+        activate Router1
         
-        Router->>Router: Update ARP Cache with default gateway MAC
-        deactivate Router
+        Router1->>Router1: Update ARP Cache with default gateway MAC
+        deactivate Router1
     end
     
-    Router->>RouterNIC: Forward ICMP Echo Request
-    activate RouterNIC
+    Router1->>Router1NIC: Forward ICMP Echo Request
+    activate Router1NIC
     
-    RouterNIC->>PC2NIC: Send ICMP Echo Request
+    Router1NIC->>Router2NIC: Send ICMP Echo Request
+    activate Router2NIC
+
+    Router2NIC->>Router2: Receive ICMP Echo Request
+    activate Router2
+
+    Router2->>Router2: Check Routing Table for PC2 IP
+    opt PC2(또는 default gateway)의 IP 정보가 Routing Table에 없는 경우
+        Note over Router2NIC,Router2: Repeat process 5 to 11
+    end
+
+    Router2->>PC2NIC: Forward ICMP Echo Request
     activate PC2NIC
-    
+
     PC2NIC->>PC2: Receive ICMP Echo Request
     activate PC2
 
     PC2->>PC2NIC: Create ICMP Echo Reply
     activate PC2NIC
-    PC2NIC->>RouterNIC: Send ICMP Echo Reply
-    activate RouterNIC
-    RouterNIC->>Router: Receive ICMP Echo Reply
-    activate Router
 
-    Router->>RouterNIC: Forward ICMP Echo Reply
-    activate RouterNIC
-    RouterNIC->>PC1NIC: Send ICMP Echo Reply
+    PC2NIC->>Router2: Send ICMP Echo Reply
+    activate Router2
+
+    Router2->>Router2NIC: Forward ICMP Echo Reply
+    activate Router2NIC
+
+    Router2NIC->>Router1NIC: Send ICMP Echo Reply
+    activate Router1NIC
+
+    Router1NIC->>Router1: Receive ICMP Echo Reply
+    activate Router1
+
+    Router1->>Router1NIC: Forward ICMP Echo Reply
+    activate Router1NIC
+
+    Router1NIC->>PC1NIC: Send ICMP Echo Reply
     activate PC1NIC
+
     PC1NIC->>PC1: Receive ICMP Echo Reply
     activate PC1
 ```
