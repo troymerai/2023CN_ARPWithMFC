@@ -37,13 +37,14 @@
 ## 실습 시나리오 시퀀스 다이어그램
 ```mermaid
 sequenceDiagram
+    actor A as Tester
     participant PC1
     participant Router1
     participant Router2
     participant PC2(외부 네트워크 호스트)
 
     autonumber
-    PC1->>Router1: Set up Routing Table
+    A->>Router1: Set up Routing Table
     activate Router1
     PC1->>Router1: ICMP Echo Request (Ping)
     activate Router1
@@ -61,7 +62,6 @@ sequenceDiagram
 
 각 시퀀스에 따른 세부 시퀀스 다이어그램
 
-### PC1 -> Router : ICMP Echo Request (Ping)
 ```mermaid
 sequenceDiagram
     autonumber
