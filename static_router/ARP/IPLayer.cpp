@@ -261,6 +261,9 @@ void CIPLayer::Routing(unsigned char* dest_ip, unsigned char* ppayload, int iose
             // 패킷 전송 후 함수 종료
             return;
         }
+        
+        // test용 코드 데모 시 삭제할 것 (문제 생기면 디버깅 안해도 알기 위해서..)
+        AfxMessageBox(_T("호스트 또는 default gateway의 IP주소가 발견되지 않았음!"));
     }
 }
 
