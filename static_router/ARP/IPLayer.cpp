@@ -147,9 +147,9 @@ void CIPLayer::AddRouteTable(unsigned char* _destination_ip, unsigned char* _net
     // 라우팅 테이블의 시작점을 가리키는 반복자를 선언
     std::list<ROUTING_TABLE_NODE>::iterator add_point = route_table.begin();
 
-    //// 새로운 루트를 추가할 위치 찾기 (Longest Match 방식 사용)
+    //// 새로운 루트를 추가할 위치 찾기 (Longest Match 알고리즘 사용)
     // 라우팅 테이블의 끝에 도달하거나 
-    // 새로운 루트의 게이트웨이가 현재 루트의 게이트웨이보다 긴 prefix(subnet mask)를 가질 때까지 반복
+    // 새로운 루트의 게이트웨이가 현재 루트의 게이트웨이보다 긴 prefix(subnet mask)를 가질 때까지 앞에서부터 확인
     while (add_point != route_table.end() && LongestPrefix(add_point->gateway, rt.gateway)) {
         add_point++;
     }
@@ -240,12 +240,18 @@ void CIPLayer::Routing(unsigned char* dest_ip, unsigned char* ppayload, int iose
     // 라우팅 테이블의 각 라우트에 대해 반복
     for each (ROUTING_TABLE_NODE row in route_table) {       //table에서 한 열씩 뽑아...
 
+        // 20231212
+        // 나중에 코드 리팩토링
+        // 넷마스크 연산 결과를 굳이 저장 안해도 됨 
+        // 바로 비교해서 분기하는 방식으로 수정하기
+      
         // 목적지 IP와 넷마스크와의 AND 연산을 수행하여 마스킹 결과를 계산
         for (int i = 0; i < IP_ADDR_SIZE; i++)masked[i] = dest_ip[i] & row.netmask[i];  
              
         // 마스킹 결과와 라우트의 목적지 IP를 비교하여 일치하는 경우 
         // 해당 라우트로 패킷을 전송
-        if (memcmp(masked, row.destination_ip, IP_ADDR_SIZE)==0) {      
+        if (memcmp(masked, row.destination_ip, IP_ADDR_SIZE)==0) {    
+
             // 라우트가 활성화되어 있고, 대상이 호스트인 경우 
             // 패킷을 직접 전송
             if ((row.flag & IP_ROUTE_UP) && (row.flag & IP_ROUTE_HOST)) {    
